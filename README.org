@@ -1,1 +1,2 @@
 # .spacemacs.d
+* TODO main purpose: save the daily snippets created at work
