@@ -36,10 +36,12 @@ values."
      syntax-checking
      version-control
 
-     smex
+	 smex
      ranger
+	 php
      javascript
      html
+	 ;; themes-megapack
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -47,10 +49,10 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(evil-multiedit
                                       helm-emmet
-                                      tide
+                                      ;; tide
                                       evil-ediff
-                                      helm-smex
-                                      color-theme-sanityinc-tomorrow
+									  helm-smex
+									  color-theme-sanityinc-tomorrow
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -159,9 +161,10 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         sanityinc-tomorrow-eighties
                          solarized-light
-                         apropospriate-light
+                         sanityinc-tomorrow-eighties
+						 moe-light
+						 apropospriate-light
                          sanityinc-tomorrow-day
                          spacemacs-light
                          zenburn
@@ -170,6 +173,7 @@ values."
                          solarized-dark
                          leuven
                          monokai
+
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -330,21 +334,22 @@ you should place your code here."
    aya-persist-snippets-dir "~/.spacemacs.d/snippets"
    golden-ratio-auto-scale t
    initial-frame-alist (quote ((fullscreen . maximized)))
-   auto-save-default nil
+   ;; auto-save-default nil
    org-src-fontify-natively t
-   org-agenda-files '("~/org")
+   org-agenda-files '("~")
    auto-mode-alist (append
-                    '(
-                      ;; ("\\.html\\'" . web-mode)
-                      )
+                    '(("\\.xtpl\\'" . web-mode)
+					  )
                     auto-mode-alist)
-   ;; auto-save-visited-file-name t
-   ;; auto-save-interval 300
+   auto-save-visited-file-name t
+   auto-save-interval 300
    ranger-override-dired t
    )
   (delete-selection-mode t)
   (setq-default
    truncate-lines t
+   ;; tab-width 4
+   indent-tabs-mode t
    tab-width 4
    evil-move-beyond-eol nil
    )
@@ -361,7 +366,7 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
-  (define-key evil-normal-state-map (kbd "g s") 'evil-surround-region)
+  ;; (define-key evil-normal-state-map (kbd "g s") 'evil-surround-region)
   ;; (define-key evil-insert-state-map (kbd "TAB") nil)
   ;; (define-key evil-insert-state-map (kbd "<tab>") nil)
   (define-key evil-insert-state-map (kbd "C-d") 'evil-open-below)
@@ -394,7 +399,7 @@ Threat is as function body when from endline before )"
     )
   (define-key evil-insert-state-map (kbd "C-;") 'insert-semi-at-eol)
   (with-eval-after-load 'helm
-    (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-buffers))
+	(define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-buffers))
 
   ;; (setq-default dotspacemacs-configuration-layers '(
   ;;                                                   (auto-completion :variables
@@ -422,8 +427,8 @@ Threat is as function body when from endline before )"
   ;;   )
 
   (with-eval-after-load 'emmet-mode
-    (define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
-    )
+	(define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
+	)
   ;; todo company&hippie
 
   (require 'evil-multiedit)
@@ -520,29 +525,26 @@ Threat is as function body when from endline before )"
     (define-key yas-keymap [(control tab)] 'yas-next-field)
     (define-key yas-keymap (kbd "RET") #'yas-next-field)
     (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
-    )
+  )
 
   (dolist (charset '(kana han cjk-misc bopomofo))
-    (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "Microsoft YaHei" :size 18)))
+	(set-fontset-font (frame-parameter nil 'font) charset
+					  (font-spec :family "Microsoft YaHei" :size 18)))
 
   (defun browse-file-directory ()
-    "Open the current file's directory however the OS would."
-    (interactive)
-    (if default-directory
-        (browse-url-of-file (expand-file-name default-directory))
-      (error "No `default-directory' to open")))
+	"Open the current file's directory however the OS would."
+	(interactive)
+	(if default-directory
+		(browse-url-of-file (expand-file-name default-directory))
+	  (error "No `default-directory' to open")))
+  (evil-define-key 'normal evil-org-mode-map (kbd "g RET") #'org-open-at-point)
 
+  (add-hook 'php-mode-hook (lambda () (electric-indent-local-mode -1)))
+  (add-hook 'php-mode-hook (lambda () (setq indent-tabs-mode t)))
+  (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
   (add-hook 'js2-mode-hook 'js2-refactor-mode)
 
-  (with-eval-after-load 'org
-    (evil-define-key 'insert org-mode-map (kbd "<C-return>") 'org-insert-heading-respect-content)
-    (evil-define-key 'normal org-mode-map (kbd "RET") 'helm-mini)
-    (evil-define-key 'insert org-mode-map (kbd "TAB") 'tab-indent-or-complete)
-    (evil-define-key 'insert org-mode-map (kbd "C-TAB") 'org-cycle)
-    )
-
-  )
+)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.

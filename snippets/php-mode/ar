@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: ar
+# key: ar
+# --
+array($1)
