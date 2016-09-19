@@ -41,7 +41,8 @@ values."
 	 php
      javascript
      html
-	 ;; themes-megapack
+	 themes-megapack
+	 autohotkey
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -53,6 +54,7 @@ values."
                                       evil-ediff
 									  helm-smex
 									  color-theme-sanityinc-tomorrow
+									  nyan-mode
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -366,6 +368,10 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
+  (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
+  (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
+  (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
+  (evil-define-key 'normal js2-mode-map (kbd "g d") #'js2-jump-to-definition)
   ;; (define-key evil-normal-state-map (kbd "g s") 'evil-surround-region)
   ;; (define-key evil-insert-state-map (kbd "TAB") nil)
   ;; (define-key evil-insert-state-map (kbd "<tab>") nil)
@@ -376,8 +382,7 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-a") 'beginning-of-line-text)
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-insert-state-map (kbd "C-k") 'evil-scroll-line-up)
-  (define-key evil-insert-state-map (kbd "C-l") 'hippie-expand)
-  (define-key evil-insert-state-map (kbd "C-'") 'emmet-expand-yas)
+  (define-key evil-insert-state-map (kbd "C-l") 'emmet-expand-yas)
   (defun insert-curly-and-go-inside ()
     "Insert {}.
 Threat is as function body when from endline before )"
@@ -426,10 +431,20 @@ Threat is as function body when from endline before )"
   ;;   (define-key flyspell-mode-map (kbd "C-:") #'flyspell-auto-correct-word)
   ;;   )
 
+  (with-eval-after-load 'web-mode
+	(define-key web-mode-map (kbd "TAB") nil)
+	(define-key web-mode-map (kbd "<tab>") nil)
+	(evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
+	(evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
+	)
+
   (with-eval-after-load 'emmet-mode
+	(define-key emmet-mode-keymap (kbd "TAB") nil)
+	(define-key emmet-mode-keymap (kbd "<tab>") nil)
+	(evil-define-key 'insert emmet-mode-keymap (kbd "TAB") #'tab-indent-or-complete)
+	(evil-define-key 'insert emmet-mode-keymap (kbd "<tab>") #'tab-indent-or-complete)
 	(define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
 	)
-  ;; todo company&hippie
 
   (require 'evil-multiedit)
   (define-key evil-normal-state-map "R" 'evil-multiedit-match-all)
@@ -537,13 +552,17 @@ Threat is as function body when from endline before )"
 	(if default-directory
 		(browse-url-of-file (expand-file-name default-directory))
 	  (error "No `default-directory' to open")))
-  (evil-define-key 'normal evil-org-mode-map (kbd "g RET") #'org-open-at-point)
+  (spacemacs/set-leader-keys
+	"od" 'browse-file-directory)
 
   (add-hook 'php-mode-hook (lambda () (electric-indent-local-mode -1)))
   (add-hook 'php-mode-hook (lambda () (setq indent-tabs-mode t)))
   (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
   (add-hook 'js2-mode-hook 'js2-refactor-mode)
 
+  (spaceline-toggle-hud-off)
+  (spaceline-toggle-buffer-position-off)
+  (nyan-mode 1)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
