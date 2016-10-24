@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: lam
+# key: lam
+# --
+($1) => {
+	$2
+}

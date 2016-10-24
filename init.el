@@ -58,18 +58,24 @@ values."
      html
 	 themes-megapack
 	 autohotkey
+	 python
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(evil-multiedit
+   dotspacemacs-additional-packages '(
+									  ;; http://emacs.stackexchange.com/questions/26729/how-to-install-a-package-from-github-to-over-emacs-builtin-one-in-spacemacs
+									  (evil-multiedit :location (recipe :fetcher github :repo "hlissner/evil-multiedit"))
                                       helm-emmet
                                       ;; tide
                                       evil-ediff
 									  helm-smex
 									  color-theme-sanityinc-tomorrow
 									  nyan-mode
+									  ;; company-jedi
+									  vue-mode
+									  xo
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -400,13 +406,15 @@ you should place your code here."
   (global-set-key (kbd "C-s") 'save-buffer)
   (global-set-key (kbd "M-x") 'helm-smex)
   (define-key evil-normal-state-map (kbd "DEL") 'evil-repeat-find-char-reverse)
-  (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-increase)
-  (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-decrease)
+  (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
+  (define-key evil-motion-state-map (kbd "C-a") 'evil-first-non-blank)
+  (define-key evil-motion-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
   (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
   (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
@@ -594,6 +602,10 @@ Threat is as function body when from endline before )"
 
   (add-hook 'php-mode-hook (lambda () (electric-indent-local-mode -1)))
   (add-hook 'php-mode-hook (lambda () (setq indent-tabs-mode t)))
+  (add-hook 'python-mode-hook (lambda () (progn
+										   (setq indent-tabs-mode t)
+										   ;; (add-to-list 'company-backends 'company-jedi)
+										   )))
   ;; (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
   (add-hook 'js2-mode-hook 'js2-refactor-mode)
 
@@ -609,6 +621,10 @@ Threat is as function body when from endline before )"
 	"Whether CHAR denotes a global marker."
 	(or (and (>= char ?a) (<= char ?z))
 		(assq char (default-value 'evil-markers-alist))))
+
+  (with-eval-after-load 'web-mode
+            (modify-syntax-entry ?' "\"" web-mode-syntax-table))
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will

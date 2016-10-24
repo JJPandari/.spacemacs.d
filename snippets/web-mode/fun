@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: fun
+# key: fun
+# --
+function $1($2) {
+	$3
+}
