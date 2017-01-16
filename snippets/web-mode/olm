@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: 
-# name: rb
-# key: rb
+# name: olm
+# key: olm
 # --
-this.request.body.
+$1 => $2

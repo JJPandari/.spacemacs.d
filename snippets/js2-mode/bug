@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: 
-# name: cl
-# key: cl
+# name: bug
+# key: bug
 # --
-console.log('$1');
+ctx.body = $1;return;

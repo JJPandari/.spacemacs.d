@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: 
-# name: tq
-# key: tq
+# name: olm
+# key: olm
 # --
-this.query.
+$1 => $2
