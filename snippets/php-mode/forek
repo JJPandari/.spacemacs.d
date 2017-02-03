@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: forek
+# key: forek
+# --
+foreach ($1 as $2 => $3) {
+    $4
+}

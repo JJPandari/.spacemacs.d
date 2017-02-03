@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: bug
+# key: bug
+# --
+ctx.body = $1;return;

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: jq
+# key: jq
+# --
+$('$1')

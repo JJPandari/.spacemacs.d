@@ -1,1 +1,3 @@
 # .spacemacs.d
+* DONE main purpose: save the daily snippets created at work
+CLOSED: [2016-09-05 周一 16:45]

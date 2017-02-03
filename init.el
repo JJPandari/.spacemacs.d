@@ -31,104 +31,115 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     helm
-     auto-completion
-     ;; better-defaults
-     emacs-lisp
-     git
-     ;; markdown
-     org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
-     syntax-checking
-     ;; version-control
+	 ;; ----------------------------------------------------------------
+	 ;; Example of useful layers you may want to use right away.
+	 ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
+	 ;; <M-m f e R> (Emacs style) to install them.
+	 ;; ----------------------------------------------------------------
+	 helm
+	 auto-completion
+	 ;; better-defaults
+	 emacs-lisp
+	 ;; git
+	 ;; markdown
+	 org
+	 ;; (shell :variables
+	 ;;        shell-default-height 30
+	 ;;        shell-default-position 'bottom)
+	 spell-checking
+	 syntax-checking
+	 version-control
 
-     smex
-     ranger
-     javascript
-     html
-     autohotkey
+	 smex
+	 ranger
+	 gtags
+	 php
+	 javascript
+	 html
+	 autohotkey
+	 python
 
      jjpandari
-     )
+	 )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
-                                      helm-emmet
-                                      tide
-                                      evil-ediff
-                                      helm-smex
-                                      color-theme-sanityinc-tomorrow
-                                      solarized-theme
-                                      zenburn-theme
-                                      apropospriate-theme
-                                      )
+									  ;; http://emacs.stackexchange.com/questions/26729/how-to-install-a-package-from-github-to-over-emacs-builtin-one-in-spacemacs
+									  (evil-multiedit :location (recipe :fetcher github :repo "hlissner/evil-multiedit"))
+									  helm-emmet
+									  ;; tide
+									  evil-ediff
+									  helm-smex
+									  color-theme-sanityinc-tomorrow
+                    solarized-theme
+                    apropospriate-theme
+									  nyan-mode
+									  ;; company-jedi
+									  ;; vue-mode
+									  xo
+									  )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
-                                    smartparens
-                                    auto-highlight-symbol
-                                    evil-mc
-                                    evil-args
-                                    evil-exchange
-                                    evil-unimpaired
-                                    evil-indent-plus
-                                    centered-buffer-mode
-                                    volatile-highlights
-                                    holy-mode
-                                    skewer-mode
-                                    highlight-indentation
-                                    vi-tilde-fringe
-                                    open-junk-file
-                                    coffee-mode
-                                    evil-tutor
-                                    eyebrowse
-                                    hl-anything
-                                    srefactor
-                                    livid-mode
-                                    alert
-                                    ;; disable it for lispy-mode
-                                    ;;https://github.com/abo-abo/lispy/issues/137
-                                    evil-escape
-                                    ;;At first, I should disable hydra in zilongshanren layer and install clj-refactor, after it is installed.
-                                    ;; I could re-enable it again in zilongshanren layer.
-                                    ;; clj-refactor
-                                    ;;remove from spacemacs distribution
-                                    neotree
-                                    leuven-theme
-                                    gh-md
-                                    evil-lisp-state
-                                    spray
-                                    ;; doc-view
-                                    lorem-ipsum
-                                    ac-ispell
-                                    ace-jump-mode
-                                    auto-complete
-                                    auto-dictionary
-                                    clang-format
-                                    define-word
-                                    google-translate
-                                    disaster
-                                    epic
-                                    fancy-battery
-                                    orgit
-                                    orglue
-                                    spinner
-                                    tagedit
+									smartparens
+									iedit
+									evil-iedit-state
+									auto-highlight-symbol
+									evil-mc
+									evil-args
+									evil-exchange
+									evil-unimpaired
+									evil-indent-plus
+									centered-buffer-mode
+									volatile-highlights
+									holy-mode
+									skewer-mode
+									highlight-indentation
+									vi-tilde-fringe
+									open-junk-file
+									coffee-mode
+									evil-tutor
+									eyebrowse
+									hl-anything
+									srefactor
+									livid-mode
+									alert
+									;; disable it for lispy-mode
+									;;https://github.com/abo-abo/lispy/issues/137
+									evil-escape
+									;;At first, I should disable hydra in zilongshanren layer and install clj-refactor, after it is installed.
+									;; I could re-enable it again in zilongshanren layer.
+									;; clj-refactor
+									;;remove from spacemacs distribution
+									neotree
+									leuven-theme
+									gh-md
+									evil-lisp-state
+									spray
+									doc-view
+									lorem-ipsum
+									ac-ispell
+									ace-jump-mode
+									auto-complete
+									auto-dictionary
+									clang-format
+									define-word
+									google-translate
+									disaster
+									epic
+									fancy-battery
+									orgit
+									orglue
+									spacemacs-theme
+									spinner
+									tagedit
 									flyspell
-                                    )
+									)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+   dotspacemacs-delete-orphan-packages nil))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -177,11 +188,10 @@ values."
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
    ;; `recents' `bookmarks' `projects' `agenda' `todos'."
-   ;; Example for 5 recent files and 7 projects: '((recents . 5) (projects . 7))
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   ;; (default nil)
-   dotspacemacs-startup-lists '((recents . 5) (projects . 7))
+   dotspacemacs-startup-lists '((recents . 5)
+                                (projects . 7))
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -190,35 +200,31 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         apropospriate-dark
-                         sanityinc-tomorrow-eighties
-                         solarized-light
-                         apropospriate-light
-                         sanityinc-tomorrow-day
-                         spacemacs-light
-                         zenburn
-                         sanityinc-solarized-light
-                         spacemacs-dark
-                         solarized-dark
-                         ;; leuven
-                         ;; monokai
-                         )
+						 solarized-light
+						 sanityinc-tomorrow-eighties
+						 moe-light
+						 apropospriate-light
+						 sanityinc-tomorrow-day
+						 spacemacs-light
+						 zenburn
+						 sanityinc-solarized-light
+						 spacemacs-dark
+						 solarized-dark
+						 leuven
+						 monokai
+
+						 )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 18
-                               :weight normal
-                               :width normal
-                               :powerline-scale 1.1)
+							   :size 18
+							   :weight normal
+							   :width normal
+							   :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
-   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
-   ;; (default "SPC")
-   dotspacemacs-emacs-command-key "SPC"
-   ;; The key used for Vim Ex commands (default ":")
-   dotspacemacs-ex-command-key ":"
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
@@ -228,6 +234,9 @@ values."
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
    ;; (default "C-M-m)
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs C-i, TAB and C-m, RET.
    ;; Setting it to a non-nil value, allows for separate commands under <C-i>
@@ -374,7 +383,6 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
   (require 'apropospriate-theme)
   (require 'solarized-theme)
   (require 'ranger)
@@ -382,32 +390,35 @@ you should place your code here."
   (global-company-mode t)
   (golden-ratio-mode t)
   (global-auto-revert-mode t)
+  (add-hook 'prog-mode-hook '(lambda () (electric-pair-mode 1)))
+  (add-hook 'prog-mode-hook '(lambda () (which-function-mode 1)))
+  (add-hook 'prog-mode-hook 'diff-hl-mode)
   (global-prettify-symbols-mode t)
-  (add-hook 'prog-mode-hook '(lambda () (electric-pair-mode t)))
-  (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode t)))
+  (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
   ;; (add-hook 'prog-mode-hook
   ;;           (lambda () (modify-syntax-entry ?_ "w")))
   (setq
    aya-persist-snippets-dir "~/.spacemacs.d/snippets"
-   ;; yas-installed-snippets-dir ""
    golden-ratio-auto-scale t
    initial-frame-alist (quote ((fullscreen . maximized)))
    ;; auto-save-default nil
    org-src-fontify-natively t
-   org-agenda-files '("~/org")
+   org-agenda-files '("~")
    auto-mode-alist (append
-                    '(
-                      ("\\.vue\\'" . web-mode)
-                      )
-                    auto-mode-alist)
-   ;; auto-save-visited-file-name t
-   ;; auto-save-interval 300
+					'(("\\.xtpl\\'" . web-mode)
+					  ("\\.vue\\'" . web-mode)
+					  ("\\.blade.php\\'" . web-mode)
+					  )
+					auto-mode-alist)
+   auto-save-visited-file-name t
+   auto-save-interval 300
    ranger-override-dired t
    scheme-program-name "csi -:c"
    )
   (delete-selection-mode t)
   (setq-default
    truncate-lines t
+   ;; indent-tabs-mode t
    tab-width 4
    evil-move-beyond-eol nil
    )
@@ -416,46 +427,53 @@ you should place your code here."
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'save-buffer)
   (global-set-key (kbd "M-x") 'helm-smex)
-  (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-line-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-line-up)
   (define-key evil-normal-state-map (kbd "DEL") 'evil-repeat-find-char-reverse)
-  (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-increase)
-  (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-decrease)
+  (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
-  (define-key evil-insert-state-map (kbd "C-d") 'evil-open-below)
+  (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
+  (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
+  (evil-define-key 'normal js2-mode-map (kbd "g d") #'js2-jump-to-definition)
+  (define-key evil-insert-state-map (kbd "C-b") 'evil-open-below)
   (define-key evil-insert-state-map (kbd "C-y") 'evil-open-above)
+  (define-key evil-insert-state-map (kbd "C-d") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
   (define-key evil-insert-state-map (kbd "C-a") 'beginning-of-line-text)
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
-  (define-key evil-insert-state-map (kbd "C-k") 'evil-scroll-line-up)
+  (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-line-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-line-up)
+  (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
   (define-key evil-insert-state-map (kbd "C-l") 'emmet-expand-yas)
+  (define-key evil-insert-state-map (kbd "C-.") (lambda () (interactive) (insert "    ") ))
+  (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
+  ;; (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
   (defun insert-curly-and-go-inside ()
-    "Insert {}.
+	"Insert {}.
 Threat is as function body when from endline before )"
-    (interactive)
-    (insert " {\n\n}")
-    (indent-according-to-mode)
-    (forward-line -1)
-    (indent-according-to-mode)
-    )
+	(interactive)
+	(insert " {\n\n}")
+	(indent-according-to-mode)
+	(forward-line -1)
+	(indent-according-to-mode)
+	)
   (evil-define-key 'insert prog-mode-map (kbd "<C-return>") 'insert-curly-and-go-inside)
   (defun insert-semi-at-eol ()
-    "Insert semicolon at end of line."
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (insert ";")
-      )
-    )
+	"Insert semicolon at end of line."
+	(interactive)
+	(save-excursion
+	  (end-of-line)
+	  (insert ";")
+	  )
+	)
   (define-key evil-insert-state-map (kbd "C-;") 'insert-semi-at-eol)
   (with-eval-after-load 'helm
-    (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-buffers))
+	(define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-buffers))
 
   ;; (setq-default dotspacemacs-configuration-layers '(
   ;;                                                   (auto-completion :variables
@@ -465,59 +483,89 @@ Threat is as function body when from endline before )"
   (put 'dired-find-alternate-file 'disabled nil)
   (require 'dired)
   (with-eval-after-load 'dired
-    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+	(define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
 
   (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    (define-key company-active-map (kbd "RET") nil)
-    (define-key company-active-map (kbd "<return>") nil)
-    (define-key company-active-map (kbd "TAB") #'company-complete-selection)
-    (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
-    )
+	(define-key company-active-map (kbd "M-n") nil)
+	(define-key company-active-map (kbd "M-p") nil)
+	(define-key company-active-map (kbd "C-n") #'company-select-next)
+	(define-key company-active-map (kbd "C-p") #'company-select-previous)
+	(define-key company-active-map (kbd "RET") nil)
+	(define-key company-active-map (kbd "<return>") nil)
+	(define-key company-active-map (kbd "TAB") #'company-complete-selection)
+	(define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+	(define-key company-active-map (kbd "C-l") nil)
+	)
 
   ;; (with-eval-after-load 'flyspell
   ;;   (define-key flyspell-mode-map (kbd "C-:") #'flyspell-auto-correct-word)
   ;;   )
 
+  (with-eval-after-load 'web-mode
+	(define-key web-mode-map (kbd "TAB") nil)
+	(define-key web-mode-map (kbd "<tab>") nil)
+	(evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
+	(evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
+	)
+
   (with-eval-after-load 'emmet-mode
-    (define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
-    )
-  ;; todo company&hippie
+	(define-key emmet-mode-keymap (kbd "TAB") nil)
+	(define-key emmet-mode-keymap (kbd "<tab>") nil)
+	(evil-define-key 'insert emmet-mode-keymap (kbd "TAB") #'tab-indent-or-complete)
+	(evil-define-key 'insert emmet-mode-keymap (kbd "<tab>") #'tab-indent-or-complete)
+	(define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
+	)
+
+  (require 'evil-multiedit)
+  (define-key evil-normal-state-map "R" 'evil-multiedit-match-all)
+  (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+  (define-key evil-normal-state-map (kbd "C-n") 'evil-multiedit-match-symbol-and-next)
+  (define-key evil-visual-state-map (kbd "C-n") 'evil-multiedit-match-symbol-and-next)
+  (define-key evil-normal-state-map (kbd "C-p") 'evil-multiedit-match-symbol-and-prev)
+  (define-key evil-visual-state-map (kbd "C-p") 'evil-multiedit-match-symbol-and-prev)
+  (define-key evil-visual-state-map (kbd "C-M-D") 'evil-multiedit-restore)
+  (define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  (define-key evil-multiedit-state-map (kbd "<return>") 'evil-multiedit-toggle-or-restrict-region)
+  ;; (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  ;; (define-key evil-multiedit-state-map (kbd "M-n") 'evil-multiedit-next)
+  ;; (define-key evil-multiedit-state-map (kbd "M-p") 'evil-multiedit-prev)
+  ;; (define-key evil-multiedit-insert-state-map (kbd "M-n") 'evil-multiedit-next)
+  ;; (define-key evil-multiedit-insert-state-map (kbd "M-p") 'evil-multiedit-prev)
+
+  ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
 
   (defun check-expansion ()
-    (save-excursion
-      (if (looking-at "\\_>") t
-        (backward-char 1)
-        (if (looking-at "\\.") t
-          (backward-char 1)
-          (if (looking-at "->") t nil)))))
+	(save-excursion
+	  (if (looking-at "\\_>") t
+		(backward-char 1)
+		(if (looking-at "\\.") t
+		  (backward-char 1)
+		  (if (looking-at "->") t nil)))))
 
   (defun do-yas-expand ()
-    (let ((yas-fallback-behavior 'return-nil))
-      (yas-expand)))
+	(let ((yas-fallback-behavior 'return-nil))
+	  (yas-expand)))
 
   (defun tab-indent-or-complete ()
-    (interactive)
-    (cond
-     ((minibufferp)
-      (minibuffer-complete))
-     (t
-      ;; (indent-for-tab-command)
-      (if (and (or (not yas-minor-mode)
-                   (null (do-yas-expand)))
-               (check-expansion))
-          (progn
-            (company-manual-begin)
-            (if (null company-candidates)
-                (progn
-                  (company-abort)
-                  (hippie-expand nil)
-                  ;; (indent-for-tab-command)
-                  )))
-        ))))
+	(interactive)
+	(cond
+	 ((minibufferp)
+	  (minibuffer-complete))
+	 (t
+	  ;; (indent-for-tab-command)
+	  (if (and (or (not yas-minor-mode)
+				   (null (do-yas-expand)))
+			   (check-expansion))
+		  (progn
+			(company-manual-begin)
+			(if (null company-candidates)
+				(progn
+				  (company-abort)
+				  (hippie-expand nil)
+				  ;; (indent-for-tab-command)
+				  )))
+		))))
 
   ;; (defun tab-complete-or-next-field ()
   ;;   (interactive)
@@ -535,17 +583,17 @@ Threat is as function body when from endline before )"
   ;;           (yas-next-field)))))
 
   (defun expand-snippet-or-complete-selection ()
-    (interactive)
-    (if (or (not yas-minor-mode)
-            (null (do-yas-expand))
-            (company-abort))
-        (company-complete-selection)))
+	(interactive)
+	(if (or (not yas-minor-mode)
+			(null (do-yas-expand))
+			(company-abort))
+		(company-complete-selection)))
 
   (defun abort-company-or-yas ()
-    (interactive)
-    (if (null company-candidates)
-        (yas-abort-snippet)
-      (company-abort)))
+	(interactive)
+	(if (null company-candidates)
+		(yas-abort-snippet)
+	  (company-abort)))
 
   (define-key evil-insert-state-map [tab] 'tab-indent-or-complete)
   (define-key evil-insert-state-map (kbd "TAB") 'tab-indent-or-complete)
@@ -566,23 +614,57 @@ Threat is as function body when from endline before )"
     )
 
   (dolist (charset '(kana han cjk-misc bopomofo))
-    (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "Microsoft YaHei" :size 18)))
+	(set-fontset-font (frame-parameter nil 'font) charset
+					  (font-spec :family "Microsoft YaHei" :size 18)))
 
   (defun browse-file-directory ()
-    "Open the current file's directory however the OS would."
-    (interactive)
-    (if default-directory
-        (browse-url-of-file (expand-file-name default-directory))
-      (error "No `default-directory' to open")))
+	"Open the current file's directory however the OS would."
+	(interactive)
+	(if default-directory
+		(browse-url-of-file (expand-file-name default-directory))
+	  (error "No `default-directory' to open")))
+  (spacemacs/set-leader-keys
+	"od" 'browse-file-directory
+	"or" 'helm-gtags-find-rtag)
 
+  (add-hook 'php-mode-hook (lambda () (progn
+                                        (electric-indent-local-mode -1)
+                                        (modify-syntax-entry ?$ "\_" php-mode-syntax-table))))
+  ;; (add-hook 'php-mode-hook (lambda () (setq indent-tabs-mode t)))
+  (add-hook 'python-mode-hook (lambda () (progn
+										   ;; (setq indent-tabs-mode t)
+										   ;; (add-to-list 'company-backends 'company-jedi)
+										   )))
+  ;; (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
   (add-hook 'js2-mode-hook '(lambda () (js2-refactor-mode 1)))
 
   (with-eval-after-load 'org
     (evil-define-key 'normal org-mode-map (kbd "RET") 'helm-mini)
-    (evil-define-key 'insert org-mode-map (kbd "TAB") 'tab-indent-or-complete)
-    (evil-define-key 'insert org-mode-map (kbd "C-TAB") 'org-cycle)
+    ;; (evil-define-key 'insert org-mode-map (kbd "TAB") 'tab-indent-or-complete)
+    ;; (evil-define-key 'insert org-mode-map (kbd "C-TAB") 'org-cycle)
     )
+
+  (spaceline-toggle-hud-off)
+  (spaceline-toggle-buffer-position-off)
+  (spaceline-toggle-which-function-on)
+  (nyan-mode 1)
+
+  (with-eval-after-load 'php-mode
+	;; (modify-syntax-entry ?$ "\_" php-mode-syntax-table)
+	;; (evil-define-key 'normal php-mode-map (kbd "g d") (lambda () (interactive) (find-tag (thing-at-point 'symbol))))
+	)
+  (evil-define-key 'insert c-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
+  (evil-define-key 'insert php-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
+  (evil-define-key 'insert php-mode-map (kbd "C-j") (lambda () (interactive) (insert " => ")))
+
+  (defun evil-global-marker-p (char)
+	"Whether CHAR denotes a global marker."
+	(or (and (>= char ?a) (<= char ?z))
+		(assq char (default-value 'evil-markers-alist))))
+
+  (with-eval-after-load 'web-mode
+	(modify-syntax-entry ?' "\"" web-mode-syntax-table)
+	(modify-syntax-entry ?` "\"" web-mode-syntax-table))
 
   (spacemacs/set-leader-keys "od" 'browse-file-directory)
 

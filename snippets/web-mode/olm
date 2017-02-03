@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: olm
+# key: olm
+# --
+$1 => $2

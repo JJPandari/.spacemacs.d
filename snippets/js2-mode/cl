@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: cl
+# key: cl
+# --
+console.log('$1');
