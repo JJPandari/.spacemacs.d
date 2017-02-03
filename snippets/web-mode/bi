@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: bi
+# key: bi
+# --
+{{$1}}

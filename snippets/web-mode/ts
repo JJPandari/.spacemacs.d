@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ts
+# key: ts
+# --
+\${$1}

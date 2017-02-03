@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: vd
+# key: vd
+# --
+var_dump($1);exit;
