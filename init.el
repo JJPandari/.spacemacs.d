@@ -54,6 +54,7 @@ values."
      ranger
      javascript
      html
+     autohotkey
 
      jjpandari
      )
@@ -383,6 +384,7 @@ you should place your code here."
   (global-auto-revert-mode t)
   (global-prettify-symbols-mode t)
   (add-hook 'prog-mode-hook '(lambda () (electric-pair-mode t)))
+  (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode t)))
   ;; (add-hook 'prog-mode-hook
   ;;           (lambda () (modify-syntax-entry ?_ "w")))
   (setq
@@ -401,6 +403,7 @@ you should place your code here."
    ;; auto-save-visited-file-name t
    ;; auto-save-interval 300
    ranger-override-dired t
+   scheme-program-name "csi -:c"
    )
   (delete-selection-mode t)
   (setq-default
@@ -421,6 +424,8 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
+  (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
+  (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
   (define-key evil-insert-state-map (kbd "C-d") 'evil-open-below)
   (define-key evil-insert-state-map (kbd "C-y") 'evil-open-above)
@@ -440,7 +445,6 @@ Threat is as function body when from endline before )"
     (indent-according-to-mode)
     )
   (evil-define-key 'insert prog-mode-map (kbd "<C-return>") 'insert-curly-and-go-inside)
-  (define-key evil-insert-state-map (kbd "<C-return>") 'insert-curly-and-go-inside)
   (defun insert-semi-at-eol ()
     "Insert semicolon at end of line."
     (interactive)
@@ -575,7 +579,6 @@ Threat is as function body when from endline before )"
   (add-hook 'js2-mode-hook '(lambda () (js2-refactor-mode 1)))
 
   (with-eval-after-load 'org
-    (evil-define-key 'insert org-mode-map (kbd "<C-return>") 'org-insert-heading-respect-content)
     (evil-define-key 'normal org-mode-map (kbd "RET") 'helm-mini)
     (evil-define-key 'insert org-mode-map (kbd "TAB") 'tab-indent-or-complete)
     (evil-define-key 'insert org-mode-map (kbd "C-TAB") 'org-cycle)
@@ -605,6 +608,9 @@ Threat is as function body when from endline before )"
     "Whether CHAR denotes a global marker."
     (or (and (>= char ?a) (<= char ?z))
         (assq char (default-value 'evil-markers-alist))))
+
+  (spacemacs/set-leader-keys "oe" (lambda () (interactive) (shell-command (concat "csi " buffer-file-name))))
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -619,7 +625,7 @@ Threat is as function body when from endline before )"
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
- '(fci-rule-color "#eee8d5")
+ '(fci-rule-color "#eee8d5" t)
  '(global-prettify-symbols-mode t)
  '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
  '(hl-bg-colors
@@ -632,11 +638,16 @@ Threat is as function body when from endline before )"
  '(nrepl-message-colors
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
- '(org-agenda-files nil t)
+ '(org-agenda-files
+   (quote
+    ("~/notes/org-note.org" "c:/cygwin64/home/Pandari/org/todo.org")))
  '(package-selected-packages
    (quote
     (helm-pt ws-butler window-numbering which-key web-mode web-beautify use-package toc-org spacemacs-theme spaceline solarized-theme smooth-scrolling smartparens slim-mode scss-mode sass-mode restart-emacs ranger rainbow-delimiters quelpa popwin phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el paradox page-break-lines org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets move-text macrostep linum-relative less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-symbol highlight-parentheses highlight-numbers help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flyspell helm-flx helm-emmet helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag golden-ratio gnuplot git-gutter-fringe git-gutter-fringe+ flycheck-pos-tip flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-multiedit evil-matchit evil-anzu eval-sexp-fu elisp-slime-nav drupal-mode diff-hl company-web company-tern company-statistics company-quickhelp color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clean-aindent-mode buffer-move bracketed-paste bind-map auto-yasnippet auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
  '(paradox-github-token t)
+ '(quack-programs
+   (quote
+    ("mit-scheme --heap 512" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "mzscheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi")))
  '(safe-local-variable-values
    (quote
     ((eval font-lock-add-keywords nil

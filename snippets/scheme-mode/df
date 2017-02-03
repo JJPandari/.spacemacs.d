@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: df
+# key: df
+# --
+(define ($1)
+  $2
+  )
