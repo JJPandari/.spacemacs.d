@@ -452,6 +452,8 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-l") 'emmet-expand-yas)
   (define-key evil-insert-state-map (kbd "C-.") (lambda () (interactive) (insert "    ") ))
   (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
+  (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
+  (define-key evil-insert-state-map (kbd "C-r") #'quoted-insert)
   ;; (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
   (defun insert-curly-and-go-inside ()
 	"Insert {}.

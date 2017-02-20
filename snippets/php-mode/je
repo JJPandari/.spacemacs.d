@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: je
+# key: je
+# --
+echo json_encode($1);exit;
