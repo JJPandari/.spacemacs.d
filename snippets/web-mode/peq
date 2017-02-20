@@ -1,8 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: 
-# name: df
-# key: df
+# name: peq
+# key: peq
 # --
-(define ($1)
-  $2
-  )
+<?=$1?>

@@ -1,8 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: 
-# name: df
-# key: df
+# name: php
+# key: php
 # --
-(define ($1)
-  $2
-  )
+<?php $1 ?>
