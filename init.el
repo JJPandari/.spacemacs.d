@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
@@ -135,6 +136,7 @@ values."
                                     spinner
                                     tagedit
                                     flyspell
+                                    company-tern
                                     )
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
@@ -218,7 +220,7 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("DejaVu Sans Mono"
+   dotspacemacs-default-font '("Source Code Pro"
                                :size 18
                                :weight normal
                                :width normal
@@ -416,6 +418,7 @@ you should place your code here."
    ranger-override-dired t
    scheme-program-name "csi -:c"
    mmm-global-mode 'maybe
+   js2-include-node-externs t
    )
   (delete-selection-mode t)
   (setq-default
@@ -437,6 +440,7 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
+  (define-key evil-motion-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
   (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
   (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
@@ -455,7 +459,11 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-.") (lambda () (interactive) (insert "    ") ))
   (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
   (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
-  ;; (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
+  (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
+  (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
+  (spacemacs/set-leader-keys "(" #'backward-up-list)
+  (spacemacs/set-leader-keys ")" #'up-list)
+  (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
   (defun insert-curly-and-go-inside ()
     "Insert {}.
 Threat is as function body when from endline before )"
@@ -492,7 +500,7 @@ Threat is as function body when from endline before )"
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-n") #'company-complete-common-or-cycle)
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     (define-key company-active-map (kbd "RET") nil)
     (define-key company-active-map (kbd "<return>") nil)
@@ -620,7 +628,7 @@ Threat is as function body when from endline before )"
 
   (dolist (charset '(kana han cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "Microsoft YaHei" :size 18)))
+                      (font-spec :family "思源黑体 Regular" :size 18)))
 
   ;; http://emacs.stackexchange.com/a/7745/12854
   (defun browse-file-directory ()
