@@ -428,6 +428,7 @@ you should place your code here."
    evil-move-beyond-eol nil
    )
 
+  ;; http://emacs.stackexchange.com/a/20717/12854
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'save-buffer)
@@ -709,6 +710,20 @@ Threat is as function body when from endline before )"
         (assq char (default-value 'evil-markers-alist))))
 
   (spacemacs/set-leader-keys "oe" (lambda () (interactive) (shell-command (concat "csi " buffer-file-name))))
+
+  (defun make-cd-for-terminal ()
+    "make a cd command for terminal, targeting current buffer file's dir"
+    (interactive)
+    (let ((file-name (buffer-file-name)))
+      (if file-name
+          (message (kill-new (format "cd %s\n" (file-name-directory file-name))))
+        (error "Buffer not visiting a file"))))
+
+  (defun open-emacs-window ()
+    "switch to emacs frame"
+    (select-frame-set-input-focus (selected-frame)))
+
+  (spacemacs/set-leader-keys "oy" (lambda () (interactive) (jjpandari/make-cd-for-terminal)))
 
   )
 
