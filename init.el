@@ -446,7 +446,9 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
   (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
   (evil-define-key 'normal js2-mode-map (kbd "g d") #'js2-jump-to-definition)
-  (define-key evil-insert-state-map (kbd "C-b") 'evil-open-below)
+  (define-key evil-insert-state-map (kbd "C-t") 'evil-execute-in-normal-state)
+  (define-key evil-insert-state-map (kbd "C-b") 'delete-char)
+  (define-key evil-insert-state-map (kbd "C-o") 'evil-open-below)
   (define-key evil-insert-state-map (kbd "C-y") 'evil-open-above)
   (define-key evil-insert-state-map (kbd "C-d") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
@@ -629,7 +631,7 @@ Threat is as function body when from endline before )"
 
   (dolist (charset '(kana han cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "思源黑体 Regular" :size 18)))
+                      (font-spec :family "思源黑体 Regular" :size 15)))
 
   ;; http://emacs.stackexchange.com/a/7745/12854
   (defun browse-file-directory ()
@@ -711,10 +713,12 @@ Threat is as function body when from endline before )"
 
   (spacemacs/set-leader-keys "oe" (lambda () (interactive) (shell-command (concat "csi " buffer-file-name))))
 
+  (server-start)
+
   (defun make-cd-for-terminal ()
     "make a cd command for terminal, targeting current buffer file's dir"
     (interactive)
-    (let ((file-name (buffer-file-name)))
+    (let ((file-name (or (buffer-file-name) list-buffers-directory)))
       (if file-name
           (message (kill-new (format "cd %s\n" (file-name-directory file-name))))
         (error "Buffer not visiting a file"))))
@@ -723,7 +727,7 @@ Threat is as function body when from endline before )"
     "switch to emacs frame"
     (select-frame-set-input-focus (selected-frame)))
 
-  (spacemacs/set-leader-keys "oy" (lambda () (interactive) (jjpandari/make-cd-for-terminal)))
+  (spacemacs/set-leader-keys "oy" (lambda () (interactive) (make-cd-for-terminal)))
 
   )
 
