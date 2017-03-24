@@ -80,6 +80,8 @@ values."
                                       ;; company-jedi
                                       ;; vue-mode
                                       xo
+                                      all-the-icons
+                                      all-the-icons-dired
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -388,6 +390,7 @@ you should place your code here."
   (require 'apropospriate-theme)
   (require 'solarized-theme)
   (require 'ranger)
+  (require 'all-the-icons)
 
   (global-company-mode t)
   (golden-ratio-mode t)
@@ -729,6 +732,8 @@ Threat is as function body when from endline before )"
 
   (spacemacs/set-leader-keys "oy" (lambda () (interactive) (make-cd-for-terminal)))
 
+  (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -758,7 +763,7 @@ Threat is as function body when from endline before )"
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/notes/org-note.org" "c:/cygwin64/home/Pandari/org/todo.org")))
+    ("~/notes/org-note.org" "c:/cygwin64/home/Pandari/org/todo.org")) t)
  '(package-selected-packages
    (quote
     (helm-pt ws-butler window-numbering which-key web-mode web-beautify use-package toc-org spacemacs-theme spaceline solarized-theme smooth-scrolling smartparens slim-mode scss-mode sass-mode restart-emacs ranger rainbow-delimiters quelpa popwin phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el paradox page-break-lines org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets move-text macrostep linum-relative less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-symbol highlight-parentheses highlight-numbers help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flyspell helm-flx helm-emmet helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag golden-ratio gnuplot git-gutter-fringe git-gutter-fringe+ flycheck-pos-tip flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-multiedit evil-matchit evil-anzu eval-sexp-fu elisp-slime-nav drupal-mode diff-hl company-web company-tern company-statistics company-quickhelp color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clean-aindent-mode buffer-move bracketed-paste bind-map auto-yasnippet auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
@@ -817,5 +822,6 @@ Threat is as function body when from endline before )"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(all-the-icons-dired-dir-face ((t (:foreground "#839496"))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
