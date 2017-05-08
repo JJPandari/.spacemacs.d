@@ -358,7 +358,7 @@ values."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("pt" "ag" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -470,6 +470,13 @@ you should place your code here."
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
   (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
+
+  (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
+  (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
+  (define-key minibuffer-local-map (kbd "C-w") #'backward-kill-word)
+  (define-key minibuffer-local-map (kbd "C-d") #'backward-char)
+  (define-key minibuffer-local-map (kbd "C-b") #'delete-char)
+
   (defun insert-curly-and-go-inside ()
     "Insert {}.
 Threat is as function body when from endline before )"
@@ -620,6 +627,8 @@ Threat is as function body when from endline before )"
 
   (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
   (define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+  (define-key company-active-map (kbd "C-j") nil)
+  (define-key company-active-map (kbd "C-k") nil)
 
   (with-eval-after-load 'yasnippet
     ;; (define-key yas-keymap [tab] 'tab-complete-or-next-field)
