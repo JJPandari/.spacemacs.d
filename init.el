@@ -69,6 +69,7 @@ values."
    dotspacemacs-additional-packages '(
                                       ;; http://emacs.stackexchange.com/questions/26729/how-to-install-a-package-from-github-to-over-emacs-builtin-one-in-spacemacs
                                       (evil-multiedit :location (recipe :fetcher github :repo "hlissner/evil-multiedit"))
+                                      evil-snipe
                                       helm-emmet
                                       ;; tide
                                       evil-ediff
@@ -91,7 +92,6 @@ values."
                                     auto-highlight-symbol
                                     evil-mc
                                     evil-args
-                                    evil-exchange
                                     evil-unimpaired
                                     evil-indent-plus
                                     centered-buffer-mode
@@ -399,6 +399,8 @@ you should place your code here."
   (add-hook 'prog-mode-hook '(lambda () (which-function-mode 1)))
   (add-hook 'prog-mode-hook 'diff-hl-mode)
   (global-prettify-symbols-mode t)
+  (evil-snipe-mode 1)
+  (evil-snipe-override-mode 1)
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
   ;; (add-hook 'prog-mode-hook
   ;;           (lambda () (modify-syntax-entry ?_ "w")))
@@ -436,7 +438,7 @@ you should place your code here."
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'save-buffer)
   (global-set-key (kbd "M-x") 'helm-smex)
-  (define-key evil-normal-state-map (kbd "DEL") 'evil-repeat-find-char-reverse)
+  (define-key evil-normal-state-map (kbd "DEL") 'evil-snipe-repeat-reverse)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
@@ -470,6 +472,10 @@ you should place your code here."
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
   (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
+  (evil-define-key 'visual evil-snipe-mode-map "z" 'evil-snipe-s)
+  (evil-define-key 'visual evil-snipe-mode-map "Z" 'evil-snipe-S)
+  (evil-define-key 'visual evil-snipe-mode-map "x" 'evil-snipe-x)
+  (evil-define-key 'visual evil-snipe-mode-map "X" 'evil-snipe-X)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: st
+# key: st
+# --
+var_dump((new \Exception())->getTraceAsString());
