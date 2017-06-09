@@ -424,6 +424,7 @@ you should place your code here."
    scheme-program-name "csi -:c"
    mmm-global-mode 'maybe
    js2-include-node-externs t
+   evil-snipe-repeat-keys nil
    )
   (delete-selection-mode t)
   (setq-default
@@ -472,10 +473,16 @@ you should place your code here."
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
   (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
-  (evil-define-key 'visual evil-snipe-mode-map "z" 'evil-snipe-s)
-  (evil-define-key 'visual evil-snipe-mode-map "Z" 'evil-snipe-S)
-  (evil-define-key 'visual evil-snipe-mode-map "x" 'evil-snipe-x)
-  (evil-define-key 'visual evil-snipe-mode-map "X" 'evil-snipe-X)
+  (define-key evil-normal-state-map (kbd "s") #'evil-substitute)
+  (define-key evil-normal-state-map (kbd "S") #'evil-change-whole-line)
+  (evil-define-key 'normal evil-snipe-mode-map (kbd "g s") #'evil-snipe-s)
+  (evil-define-key 'normal evil-snipe-mode-map (kbd "g S") #'evil-snipe-S)
+  (evil-define-key 'normal evil-snipe-mode-map (kbd "g t") #'evil-snipe-x)
+  (evil-define-key 'normal evil-snipe-mode-map (kbd "g T") #'evil-snipe-X)
+  (evil-define-key 'visual evil-snipe-mode-map "z" #'evil-snipe-s)
+  (evil-define-key 'visual evil-snipe-mode-map "Z" #'evil-snipe-S)
+  (evil-define-key 'visual evil-snipe-mode-map "x" #'evil-snipe-x)
+  (evil-define-key 'visual evil-snipe-mode-map "X" #'evil-snipe-X)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)

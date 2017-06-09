@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: law
+# key: law
+# --
+$$1->where('$2', '$3', $4);
