@@ -402,8 +402,7 @@ you should place your code here."
   (evil-snipe-mode 1)
   (evil-snipe-override-mode 1)
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
-  ;; (add-hook 'prog-mode-hook
-  ;;           (lambda () (modify-syntax-entry ?_ "w")))
+  (global-auto-revert-mode 1)
   (setq
    aya-persist-snippets-dir "~/.spacemacs.d/snippets"
    golden-ratio-auto-scale t
@@ -464,7 +463,6 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-line-down)
   (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-line-up)
   (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-  (define-key evil-insert-state-map (kbd "C-l") 'emmet-expand-yas)
   (define-key evil-insert-state-map (kbd "C-.") (lambda () (interactive) (insert "    ") ))
   (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
   (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
@@ -490,6 +488,9 @@ you should place your code here."
   (define-key minibuffer-local-map (kbd "C-d") #'backward-char)
   (define-key minibuffer-local-map (kbd "C-b") #'delete-char)
 
+  (evil-define-key 'insert js2-mode-map (kbd "C-l") #'emmet-expand-yas)
+  (evil-define-key 'insert web-mode-map (kbd "C-l") #'emmet-expand-yas)
+
   (defun insert-curly-and-go-inside ()
     "Insert {}.
 Threat is as function body when from endline before )"
@@ -500,6 +501,7 @@ Threat is as function body when from endline before )"
     (indent-according-to-mode)
     )
   (evil-define-key 'insert prog-mode-map (kbd "<C-return>") 'insert-curly-and-go-inside)
+
   (defun insert-semi-at-eol ()
     "Insert semicolon at end of line."
     (interactive)
@@ -509,6 +511,23 @@ Threat is as function body when from endline before )"
       )
     )
   (define-key evil-insert-state-map (kbd "C-;") 'insert-semi-at-eol)
+
+  (defun jjpandari/evil-search-symbol-forward ()
+    "Search forward for symbol under point."
+    (interactive)
+    (evil-search-word-forward 1 t)
+    )
+  (define-key evil-normal-state-map (kbd "*") 'jjpandari/evil-search-symbol-forward)
+  (define-key evil-motion-state-map (kbd "*") 'jjpandari/evil-search-symbol-forward)
+
+  (defun jjpandari/evil-search-symbol-backward ()
+    "Search forward for symbol under point."
+    (interactive)
+    (evil-search-word-backward 1 t)
+    )
+  (define-key evil-normal-state-map (kbd "#") 'jjpandari/evil-search-symbol-backward)
+  (define-key evil-motion-state-map (kbd "#") 'jjpandari/evil-search-symbol-backward)
+
   (with-eval-after-load 'helm
     (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-buffers)
     (define-key helm-map (kbd "C-w") 'backward-kill-word))
@@ -672,13 +691,16 @@ Threat is as function body when from endline before )"
   (add-hook 'php-mode-hook (lambda () (progn
                                         (electric-indent-local-mode -1)
                                         (modify-syntax-entry ?$ "\_" php-mode-syntax-table))))
-  ;; (add-hook 'php-mode-hook (lambda () (setq indent-tabs-mode t)))
   (add-hook 'python-mode-hook (lambda () (progn
                                            ;; (setq indent-tabs-mode t)
                                            ;; (add-to-list 'company-backends 'company-jedi)
                                            )))
   ;; (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
-  (add-hook 'js2-mode-hook '(lambda () (js2-refactor-mode 1)))
+  (add-hook 'js2-mode-hook (lambda () (progn
+                                    ;; (modify-syntax-entry ?_ "\_" js2-mode-syntax-table)
+                                    ;; (modify-syntax-entry ?$ "\_" js2-mode-syntax-table)
+                                    (flycheck-mode -1)
+                                    (js2-refactor-mode 1))))
 
   (with-eval-after-load 'org
     (evil-define-key 'normal org-mode-map (kbd "RET") 'helm-mini)
@@ -692,10 +714,6 @@ Threat is as function body when from endline before )"
   (spaceline-toggle-which-function-on)
   (nyan-mode 1)
 
-  (with-eval-after-load 'php-mode
-    ;; (modify-syntax-entry ?$ "\_" php-mode-syntax-table)
-    ;; (evil-define-key 'normal php-mode-map (kbd "g d") (lambda () (interactive) (find-tag (thing-at-point 'symbol))))
-    )
   (evil-define-key 'insert c-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
   (evil-define-key 'insert php-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
   (evil-define-key 'insert php-mode-map (kbd "C-j") (lambda () (interactive) (insert " => ")))
