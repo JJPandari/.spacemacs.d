@@ -34,6 +34,7 @@
     evil-multiedit
     counsel
     nyan-mode
+    ;; indium
     )
   "The list of Lisp packages required by the jjpandari layer.
 
@@ -86,19 +87,23 @@ Each entry is either:
 
 (defun jjpandari/init-counsel ()
   (use-package counsel
-    ;; (defun jjpandari/open-project-file ()
-    ;;   (interactive)
-    ;;   (cond
-    ;;    ((locate-dominating-file default-directory ".git") (counsel-git))
-    ;;    ((projectile-project-p) (projectile-find-file))
-    ;;    (t (spacemacs/helm-find-files))))
-    ;; :config
-    ;; (spacemacs/set-leader-keys "pf" jjpandari/open-project-file)
+    (defun jjpandari/open-project-file ()
+      (interactive)
+      (cond
+       ((locate-dominating-file default-directory ".git") (counsel-git))
+       ;; ((projectile-project-p) (projectile-find-file))
+       (t (spacemacs/helm-find-files))))
+    :config
+    (spacemacs/set-leader-keys "pf" 'jjpandari/open-project-file)
     ))
 
 (defun jjpandari/init-nyan-mode ()
   (use-package nyan-mode
     :config
     (nyan-mode 1)))
+
+(defun jjpandari/init-indium ()
+  (use-package indium
+    ))
 
 ;;; packages.el ends here

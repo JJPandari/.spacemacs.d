@@ -68,7 +68,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
                                       ;; http://emacs.stackexchange.com/questions/26729/how-to-install-a-package-from-github-to-over-emacs-builtin-one-in-spacemacs
-                                      (evil-multiedit :location (recipe :fetcher github :repo "hlissner/evil-multiedit"))
+                                      ;; (evil-multiedit :location (recipe :fetcher github :repo "hlissner/evil-multiedit"))
                                       evil-snipe
                                       helm-emmet
                                       ;; tide
@@ -77,7 +77,6 @@ values."
                                       color-theme-sanityinc-tomorrow
                                       solarized-theme
                                       apropospriate-theme
-                                      nyan-mode
                                       ;; company-jedi
                                       ;; vue-mode
                                       xo
@@ -412,7 +411,6 @@ you should place your code here."
    org-agenda-files '("~")
    auto-mode-alist (append
                     '(("\\.zsh\\'" . shell-script-mode)
-                      ("\\.xtpl\\'" . web-mode)
                       ("\\.vue\\'" . web-mode)
                       ("\\.blade.php\\'" . web-mode)
                       )
@@ -436,7 +434,7 @@ you should place your code here."
   ;; http://emacs.stackexchange.com/a/20717/12854
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
-  (global-set-key (kbd "C-s") 'save-buffer)
+  (global-set-key (kbd "C-s") 'evil-write-all)
   (global-set-key (kbd "M-x") 'helm-smex)
   (define-key evil-normal-state-map (kbd "DEL") 'evil-snipe-repeat-reverse)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
@@ -574,25 +572,6 @@ Threat is as function body when from endline before )"
     (define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
     )
 
-  (require 'evil-multiedit)
-  (define-key evil-normal-state-map "R" 'evil-multiedit-match-all)
-  (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
-  (define-key evil-normal-state-map (kbd "C-n") 'evil-multiedit-match-symbol-and-next)
-  (define-key evil-visual-state-map (kbd "C-n") 'evil-multiedit-match-symbol-and-next)
-  (define-key evil-normal-state-map (kbd "C-p") 'evil-multiedit-match-symbol-and-prev)
-  (define-key evil-visual-state-map (kbd "C-p") 'evil-multiedit-match-symbol-and-prev)
-  (define-key evil-visual-state-map (kbd "C-M-D") 'evil-multiedit-restore)
-  (define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
-  (define-key evil-multiedit-state-map (kbd "<return>") 'evil-multiedit-toggle-or-restrict-region)
-  ;; (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
-  ;; (define-key evil-multiedit-state-map (kbd "M-n") 'evil-multiedit-next)
-  ;; (define-key evil-multiedit-state-map (kbd "M-p") 'evil-multiedit-prev)
-  ;; (define-key evil-multiedit-insert-state-map (kbd "M-n") 'evil-multiedit-next)
-  ;; (define-key evil-multiedit-insert-state-map (kbd "M-p") 'evil-multiedit-prev)
-
-  ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
-  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
-
   (defun check-expansion ()
     (save-excursion
       (if (looking-at "\\_>") t
@@ -712,7 +691,6 @@ Threat is as function body when from endline before )"
   (spaceline-toggle-hud-off)
   (spaceline-toggle-buffer-position-off)
   (spaceline-toggle-which-function-on)
-  (nyan-mode 1)
 
   (evil-define-key 'insert c-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
   (evil-define-key 'insert php-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
@@ -722,6 +700,20 @@ Threat is as function body when from endline before )"
     "Whether CHAR denotes a global marker."
     (or (and (>= char ?a) (<= char ?z))
         (assq char (default-value 'evil-markers-alist))))
+
+  (evil-define-motion evil-end-of-line (count)
+    "Move the cursor to the end of the current line.
+If COUNT is given, move COUNT - 1 lines downward first."
+    :type inclusive
+    (move-end-of-line count)
+    (when evil-track-eol
+      (setq temporary-goal-column most-positive-fixnum
+            this-command 'next-line))
+    (evil-adjust-cursor)
+    (when (evil-visual-state-p)
+      (when (eolp)
+        ;; prevent "c$" and "d$" from deleting blank lines
+        (setq evil-this-type 'exclusive))))
 
   (spacemacs/set-leader-keys "od" 'browse-file-directory)
 
