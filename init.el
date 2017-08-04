@@ -28,7 +28,7 @@ values."
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '("~/.spacemacs.d/")
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
@@ -37,7 +37,8 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
+     ;; helm
+     ivy
      auto-completion
      ;; better-defaults
      emacs-lisp
@@ -47,13 +48,13 @@ values."
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
-     spell-checking
+     ;; spell-checking
      syntax-checking
      version-control
 
-     smex
+     ;; smex
      ranger
-     gtags
+     ;; gtags
      php
      javascript
      html
@@ -73,7 +74,7 @@ values."
                                       helm-emmet
                                       ;; tide
                                       evil-ediff
-                                      helm-smex
+                                      ;; helm-smex
                                       color-theme-sanityinc-tomorrow
                                       solarized-theme
                                       apropospriate-theme
@@ -82,8 +83,11 @@ values."
                                       xo
                                       all-the-icons
                                       all-the-icons-dired
+                                      smex
                                       )
-   ;; A list of packages and/or extensions that will not be install and loaded.
+   ;; A list of packages that cannot be updated.
+   dotspacemacs-frozen-packages '()
+   ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
                                     smartparens
                                     ;; iedit
@@ -115,7 +119,6 @@ values."
                                     ;; clj-refactor
                                     ;;remove from spacemacs distribution
                                     neotree
-                                    leuven-theme
                                     gh-md
                                     evil-lisp-state
                                     spray
@@ -133,16 +136,20 @@ values."
                                     fancy-battery
                                     orgit
                                     orglue
-                                    spacemacs-theme
                                     spinner
                                     tagedit
                                     flyspell
                                     company-tern
+                                    projectile
                                     )
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages nil))
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and uninstall any
+   ;; unused packages as well as their unused dependencies.
+   ;; `used-but-keep-unused' installs only the used packages but won't uninstall
+   ;; them if they become unused. `all' installs *all* packages supported by
+   ;; Spacemacs and never uninstall them. (default is `used-only')
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -228,6 +235,11 @@ values."
                                :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
+   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
+   ;; The key used for Vim Ex commands (default ":")
+   dotspacemacs-ex-command-key ":"
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
@@ -235,11 +247,8 @@ values."
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
    dotspacemacs-major-mode-leader-key ","
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m)
+   ;; (default "C-M-m")
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
-   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
-   ;; (default "SPC")
-   dotspacemacs-emacs-command-key "SPC"
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs C-i, TAB and C-m, RET.
    ;; Setting it to a non-nil value, allows for separate commands under <C-i>
@@ -333,8 +342,18 @@ values."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling nil
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
    dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
@@ -394,9 +413,13 @@ you should place your code here."
   (global-company-mode t)
   (golden-ratio-mode t)
   (global-auto-revert-mode t)
-  (add-hook 'prog-mode-hook '(lambda () (electric-pair-mode 1)))
-  (add-hook 'prog-mode-hook '(lambda () (which-function-mode 1)))
-  (add-hook 'prog-mode-hook 'diff-hl-mode)
+  (add-hook 'prog-mode-hook '(lambda ()
+                               (electric-pair-mode 1)
+                               (which-function-mode 1)
+                               (diff-hl-mode)
+                               (diminish 'evil-snipe-local-mode)
+                               (diminish 'projectile-mode);; TODO excluding it doesn't work?
+                               ))
   (global-prettify-symbols-mode t)
   (evil-snipe-mode 1)
   (evil-snipe-override-mode 1)
@@ -435,19 +458,17 @@ you should place your code here."
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'evil-write-all)
-  (global-set-key (kbd "M-x") 'helm-smex)
   (define-key evil-normal-state-map (kbd "DEL") 'evil-snipe-repeat-reverse)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
-  (define-key evil-normal-state-map (kbd "<return>") 'helm-mini)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-normal-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-visual-state-map (kbd "C-a") 'evil-first-non-blank)
   (define-key evil-visual-state-map (kbd "C-e") 'evil-end-of-line)
   (define-key evil-motion-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
-  (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
-  (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
+  ;; (define-key evil-normal-state-map (kbd "SPC '") 'evil-use-register)
+  ;; (define-key evil-visual-state-map (kbd "SPC '") 'evil-use-register)
   (evil-define-key 'normal js2-mode-map (kbd "g d") #'js2-jump-to-definition)
   (define-key evil-insert-state-map (kbd "C-t") 'evil-execute-in-normal-state)
   (define-key evil-insert-state-map (kbd "C-b") 'delete-char)
@@ -468,7 +489,7 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
-  (spacemacs/set-leader-keys "SPC" 'evil-avy-goto-char-2)
+  (spacemacs/set-leader-keys "'" 'evil-avy-goto-char-2)
   (define-key evil-normal-state-map (kbd "s") #'evil-substitute)
   (define-key evil-normal-state-map (kbd "S") #'evil-change-whole-line)
   (evil-define-key 'normal evil-snipe-mode-map (kbd "g s") #'evil-snipe-s)
@@ -663,9 +684,7 @@ Threat is as function body when from endline before )"
     (if default-directory
         (browse-url-of-file (expand-file-name default-directory))
       (error "No `default-directory' to open")))
-  (spacemacs/set-leader-keys
-    "od" 'browse-file-directory
-    "or" 'helm-gtags-find-rtag)
+  (spacemacs/set-leader-keys "od" 'browse-file-directory)
 
   (add-hook 'php-mode-hook (lambda () (progn
                                         (electric-indent-local-mode -1)
@@ -682,7 +701,7 @@ Threat is as function body when from endline before )"
                                     (js2-refactor-mode 1))))
 
   (with-eval-after-load 'org
-    (evil-define-key 'normal org-mode-map (kbd "RET") 'helm-mini)
+    (evil-define-key 'normal org-mode-map (kbd "RET") 'ivy-switch-buffer)
     (evil-define-key 'insert org-mode-map (kbd "<C-return>") 'org-insert-heading-respect-content)
     ;; (evil-define-key 'insert org-mode-map (kbd "TAB") 'tab-indent-or-complete)
     ;; (evil-define-key 'insert org-mode-map (kbd "C-TAB") 'org-cycle)

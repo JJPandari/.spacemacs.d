@@ -33,8 +33,10 @@
   '(
     evil-multiedit
     counsel
-    nyan-mode
     ;; indium
+
+    nyan-mode
+    ;; all-the-icons-ivy
     )
   "The list of Lisp packages required by the jjpandari layer.
 
@@ -85,16 +87,43 @@ Each entry is either:
     ;; (define-key evil-multiedit-insert-state-map (kbd "M-p") 'evil-multiedit-prev)
     ))
 
-(defun jjpandari/init-counsel ()
+(defun jjpandari/post-init-counsel ()
   (use-package counsel
+    :init
+    (setq ivy-virtual-abbreviate 'full)
+    :config
     (defun jjpandari/open-project-file ()
       (interactive)
       (cond
        ((locate-dominating-file default-directory ".git") (counsel-git))
        ;; ((projectile-project-p) (projectile-find-file))
-       (t (spacemacs/helm-find-files))))
-    :config
+       (t (counsel-find-file))))
+
+    ;; https://sam217pa.github.io/2016/09/13/from-helm-to-ivy/
+    (define-key evil-normal-state-map (kbd "<return>") 'ivy-switch-buffer)
+    ;; (spacemacs/set-leader-keys "bb" 'ivy-switch-buffer)
+    ;; (spacemacs/set-leader-keys "fr" 'counsel-recentf)
     (spacemacs/set-leader-keys "pf" 'jjpandari/open-project-file)
+    (spacemacs/set-leader-keys "sg" 'counsel-git-grep)
+    ;; (spacemacs/set-leader-keys "ss" 'swiper)
+    ;; (spacemacs/set-leader-keys "ry" 'counsel-yank-pop)
+    ;; (spacemacs/set-leader-keys "Ts" 'counsel-load-theme)
+    ;; (spacemacs/set-leader-keys "sj" 'counsel-imenu)
+    ;; (spacemacs/set-leader-keys "sb" 'swiper-all)
+    (dolist (key-map
+      (list ivy-mode-map ivy-switch-buffer-map
+        counsel-describe-map counsel-find-file-map counsel-git-grep-map counsel-mode-map
+        swiper-map swiper-all-map))
+      (define-key key-map (kbd "M-d") #'backward-word)
+      (define-key key-map (kbd "M-b") #'kill-word)
+      (define-key key-map (kbd "C-w") #'backward-kill-word)
+      (define-key key-map (kbd "C-d") #'backward-char)
+      (define-key key-map (kbd "C-b") #'delete-char)
+      )
+    ))
+
+(defun jjpandari/init-indium ()
+  (use-package indium
     ))
 
 (defun jjpandari/init-nyan-mode ()
@@ -102,8 +131,9 @@ Each entry is either:
     :config
     (nyan-mode 1)))
 
-(defun jjpandari/init-indium ()
-  (use-package indium
-    ))
+(defun jjpandari/init-all-the-icons-ivy ()
+  (use-package all-the-icons-ivy
+    :config
+    (all-the-icons-ivy-setup)))
 
 ;;; packages.el ends here
