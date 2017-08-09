@@ -55,7 +55,7 @@ values."
      ;; smex
      ranger
      ;; gtags
-     php
+     ;; php
      javascript
      html
      autohotkey
@@ -210,6 +210,7 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         solarized-dark
                          solarized-light
                          sanityinc-tomorrow-eighties
                          moe-light
@@ -219,7 +220,6 @@ values."
                          zenburn
                          sanityinc-solarized-light
                          spacemacs-dark
-                         solarized-dark
                          leuven
                          monokai
 
@@ -675,7 +675,8 @@ Threat is as function body when from endline before )"
 
   (dolist (charset '(kana han cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "思源黑体 Regular" :size 15)))
+                      (font-spec :family "Source Han Sans CN Regular" :size 18)))
+  (set-fontset-font t nil (font-spec :family "Dejavu Sans Mono") nil 'append)
 
   ;; http://emacs.stackexchange.com/a/7745/12854
   (defun browse-file-directory ()
