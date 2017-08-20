@@ -60,6 +60,7 @@ values."
      html
      autohotkey
      python
+     osx
 
      jjpandari
      )
@@ -229,7 +230,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 18
+                               :size 14
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -421,8 +422,17 @@ you should place your code here."
                                (diminish 'projectile-mode);; TODO excluding it doesn't work?
                                ))
   (global-prettify-symbols-mode t)
+
   (evil-snipe-mode 1)
   (evil-snipe-override-mode 1)
+  (with-eval-after-load 'evil-snipe
+    (evil-define-key* '(normal) evil-snipe-mode-map
+                      "s" #'evil-substitute
+                      "S" #'evil-change-whole-line)
+    (define-key evil-normal-state-map "s" #'evil-substitute)
+    (define-key evil-normal-state-map "S" #'evil-change-whole-line)
+    )
+
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
   (global-auto-revert-mode 1)
   (setq
@@ -445,12 +455,14 @@ you should place your code here."
    mmm-global-mode 'maybe
    js2-include-node-externs t
    evil-snipe-repeat-keys nil
+   web-mode-code-indent-offset 2
+   js-indent-level 2
    )
   (delete-selection-mode t)
   (setq-default
    truncate-lines t
    ;; indent-tabs-mode t
-   tab-width 4
+   tab-width 2
    evil-move-beyond-eol nil
    )
 
@@ -490,8 +502,6 @@ you should place your code here."
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
   (spacemacs/set-leader-keys "'" 'evil-avy-goto-char-2)
-  (define-key evil-normal-state-map (kbd "s") #'evil-substitute)
-  (define-key evil-normal-state-map (kbd "S") #'evil-change-whole-line)
   (evil-define-key 'normal evil-snipe-mode-map (kbd "g s") #'evil-snipe-s)
   (evil-define-key 'normal evil-snipe-mode-map (kbd "g S") #'evil-snipe-S)
   (evil-define-key 'normal evil-snipe-mode-map (kbd "g t") #'evil-snipe-x)
@@ -711,6 +721,9 @@ Threat is as function body when from endline before )"
   (spaceline-toggle-hud-off)
   (spaceline-toggle-buffer-position-off)
   (spaceline-toggle-which-function-on)
+  (spaceline-toggle-minor-modes-off)
+  (spaceline-toggle-evil-state-off)
+  (spaceline-toggle-version-control-off)
 
   (evil-define-key 'insert c-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
   (evil-define-key 'insert php-mode-map (kbd "C-l") (lambda () (interactive) (insert "->")))
@@ -815,10 +828,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/notes/org-note.org" "c:/cygwin64/home/Pandari/org/todo.org")) t)
+    ("~/notes/org-note.org" "c:/cygwin64/home/Pandari/org/todo.org")))
  '(package-selected-packages
    (quote
-    (helm-pt ws-butler window-numbering which-key web-mode web-beautify use-package toc-org spacemacs-theme spaceline solarized-theme smooth-scrolling smartparens slim-mode scss-mode sass-mode restart-emacs ranger rainbow-delimiters quelpa popwin phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el paradox page-break-lines org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets move-text macrostep linum-relative less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-symbol highlight-parentheses highlight-numbers help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flyspell helm-flx helm-emmet helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag golden-ratio gnuplot git-gutter-fringe git-gutter-fringe+ flycheck-pos-tip flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-multiedit evil-matchit evil-anzu eval-sexp-fu elisp-slime-nav drupal-mode diff-hl company-web company-tern company-statistics company-quickhelp color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clean-aindent-mode buffer-move bracketed-paste bind-map auto-yasnippet auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
+    (reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl yapfify xo winum wgrep uuidgen powerline smex smeargle request pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements spinner alert log4e gntp org-download nyan-mode mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode link-hint json-snatcher json-reformat multiple-cursors js2-mode ivy-hydra hydra hy-mode parent-mode hide-comnt projectile helm helm-core haml-mode gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fringe-helper git-gutter+ git-gutter fuzzy pos-tip flycheck pkg-info epl flx evil-visual-mark-mode evil-snipe evil-magit magit magit-popup git-commit with-editor evil-iedit-state iedit evil-exchange evil-ediff anzu evil goto-chg undo-tree highlight emmet-mode dumb-jump popup diminish cython-mode counsel swiper ivy web-completion-data company-anaconda company column-enforce-mode bind-key yasnippet packed async apropospriate-theme anaconda-mode pythonic f s all-the-icons-dired all-the-icons memoize font-lock+ ahk-mode avy helm-pt ws-butler window-numbering which-key web-mode web-beautify use-package toc-org spacemacs-theme spaceline solarized-theme smooth-scrolling smartparens slim-mode scss-mode sass-mode restart-emacs ranger rainbow-delimiters quelpa popwin phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el paradox page-break-lines org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets move-text macrostep linum-relative less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-symbol highlight-parentheses highlight-numbers help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flyspell helm-flx helm-emmet helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag golden-ratio gnuplot git-gutter-fringe git-gutter-fringe+ flycheck-pos-tip flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-multiedit evil-matchit evil-anzu eval-sexp-fu elisp-slime-nav drupal-mode diff-hl company-web company-tern company-statistics company-quickhelp color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clean-aindent-mode buffer-move bracketed-paste bind-map auto-yasnippet auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
  '(paradox-github-token t)
  '(quack-programs
    (quote

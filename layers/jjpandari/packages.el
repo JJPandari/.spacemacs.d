@@ -35,7 +35,7 @@
     counsel
     ;; indium
 
-    nyan-mode
+    ;; nyan-mode
     ;; all-the-icons-ivy
     )
   "The list of Lisp packages required by the jjpandari layer.
@@ -90,7 +90,10 @@ Each entry is either:
 (defun jjpandari/post-init-counsel ()
   (use-package counsel
     :init
-    (setq ivy-virtual-abbreviate 'full)
+    (setq
+     ivy-virtual-abbreviate 'full
+     ivy-re-builders-alist '((t . ivy--regex-plus))
+     )
     :config
     (defun jjpandari/open-project-file ()
       (interactive)
