@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: fori
+# key: fori
+# --
+for(let i=0 ; i<$1 ; i++) {
+    $2
+}

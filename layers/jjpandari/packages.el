@@ -32,8 +32,10 @@
 (defconst jjpandari-packages
   '(
     evil-multiedit
+    ivy
     counsel
     ;; indium
+    company-flx
 
     ;; nyan-mode
     ;; all-the-icons-ivy
@@ -87,13 +89,19 @@ Each entry is either:
     ;; (define-key evil-multiedit-insert-state-map (kbd "M-p") 'evil-multiedit-prev)
     ))
 
-(defun jjpandari/post-init-counsel ()
-  (use-package counsel
+(defun jjpandari/post-init-ivy ()
+  (use-package ivy
     :init
     (setq
      ivy-virtual-abbreviate 'full
+     ivy-initial-inputs-alist nil
      ivy-re-builders-alist '((t . ivy--regex-plus))
      )
+    :config
+    ))
+
+(defun jjpandari/post-init-counsel ()
+  (use-package counsel
     :config
     (defun jjpandari/open-project-file ()
       (interactive)
@@ -138,5 +146,11 @@ Each entry is either:
   (use-package all-the-icons-ivy
     :config
     (all-the-icons-ivy-setup)))
+
+(defun jjpandari/init-company-flx ()
+  (use-package company-flx
+    :init
+    (with-eval-after-load 'company
+      (company-flx-mode 1))))
 
 ;;; packages.el ends here

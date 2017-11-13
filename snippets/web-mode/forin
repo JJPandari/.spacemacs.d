@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: forin
+# key: forin
+# --
+for($1 in $2) {
+    $3
+}
