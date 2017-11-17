@@ -31,6 +31,7 @@
 
 (defconst jjpandari-packages
   '(
+    evil-snipe
     evil-multiedit
     ivy
     counsel
@@ -66,6 +67,31 @@ Each entry is either:
 
       - A list beginning with the symbol `recipe' is a melpa
         recipe.  See: https://github.com/milkypostman/melpa#recipe-format")
+
+(defun jjpandari/init-evil-snipe ()
+  (use-package evil-snipe
+    :init
+    (setq evil-snipe-repeat-keys nil
+          evil-snipe-enable-highlight nil)
+    :config
+    (add-hook 'prog-mode-hook '(lambda ()
+                                 (evil-snipe-local-mode 1)
+                                 (evil-snipe-override-local-mode 1)
+                                 ))
+
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "s") #'evil-substitute)
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "S") #'evil-change-whole-line)
+
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "g s") #'evil-snipe-s)
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "g S") #'evil-snipe-S)
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "g t") #'evil-snipe-x)
+    (evil-define-key 'normal evil-snipe-local-mode-map (kbd "g T") #'evil-snipe-X)
+    (evil-define-key 'visual evil-snipe-local-mode-map "z" #'evil-snipe-s)
+    (evil-define-key 'visual evil-snipe-local-mode-map "Z" #'evil-snipe-S)
+    (evil-define-key 'visual evil-snipe-local-mode-map "x" #'evil-snipe-x)
+    (evil-define-key 'visual evil-snipe-local-mode-map "X" #'evil-snipe-X)
+    (define-key evil-normal-state-map (kbd "DEL") 'evil-snipe-repeat-reverse)
+    ))
 
 (defun jjpandari/init-evil-multiedit ()
   (use-package evil-multiedit
