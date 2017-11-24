@@ -761,8 +761,11 @@ Threat is as function body when from endline before )"
   (add-hook 'js2-mode-hook (lambda () (progn
                                     ;; (modify-syntax-entry ?_ "\_" js2-mode-syntax-table)
                                     ;; (modify-syntax-entry ?$ "\_" js2-mode-syntax-table)
-                                    (flycheck-mode -1)
-                                    (js2-refactor-mode 1))))
+                                    ;; (flycheck-mode -1)
+                                    (js2-refactor-mode 1))) t)
+  (setq js2-global-externs '("$" "jQuery" "jquery" "_"))
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil)
 
   (with-eval-after-load 'org
     (evil-define-key 'normal org-mode-map (kbd "RET") 'ivy-switch-buffer)
@@ -812,12 +815,16 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
     (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
     (setq company-backends-web-mode (cdr company-backends-web-mode)) ;; company-css & company-html super slow on osx
-    (add-hook 'web-mode-hook (lambda () (setq
-                                     company-minimum-prefix-length 2
-                                     web-mode-style-padding 0
-                                     web-mode-script-padding 0
-                                     web-mode-block-padding 0)) t) ;; overwrite spacemacs' hook's settings
+    (add-hook 'web-mode-hook (lambda () (setq company-minimum-prefix-length 2
+                                         web-mode-style-padding 0
+                                         web-mode-script-padding 0
+                                         web-mode-block-padding 0)
+                               (let ((current-prefix-arg 1)) (call-interactively 'flycheck-disable-checker))
+                               ) t) ;; overwrite spacemacs' hook's settings
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
     )
+
+  (with-eval-after-load 'flycheck (setq flycheck-idle-change-delay 1))
 
   (with-eval-after-load 'emmet-mode
     (define-key emmet-mode-keymap (kbd "TAB") nil)
@@ -846,5 +853,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (spacemacs/set-leader-keys "oy" (lambda () (interactive) (make-cd-for-terminal)))
 
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
+
+  (with-eval-after-load 'image-mode
+    (evil-define-key 'evilified image-mode-map (kbd "p") #'image-previous-file)
+    (evil-define-key 'evilified image-mode-map (kbd "n") #'image-next-file)
+  )
 
   )

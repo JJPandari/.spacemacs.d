@@ -56,9 +56,9 @@
       '(:eval
         (pcase flycheck-last-status-change
           (`not-checked nil)
-          (`no-checker (propertize " -" 'face 'warning))
-          (`running (propertize " ✷" 'face 'success))
-          (`errored (propertize " !" 'face 'error))
+          (`no-checker "❄")
+          (`running (propertize "..." 'face 'success))
+          (`errored (propertize "!" 'face 'error))
           (`finished
            (let* ((error-counts (flycheck-count-errors flycheck-current-errors))
                   (no-errors (cdr (assq 'error error-counts)))
@@ -80,8 +80,10 @@
                                'face face))
                 nil)
               )))
-          (`interrupted " .")
-          (`suspicious '(propertize " ?" 'face 'warning)))))
+          (`interrupted ".")
+          (`suspicious '(propertize "?" 'face 'warning)))))
+
+(defvar jjpandari/which-function-mode-line-off-modes '(web-mode scss-mode))
 
 (with-eval-after-load 'anzu
   (with-eval-after-load 'evil-anzu
@@ -143,10 +145,13 @@
                      jjpandari/flycheck-mode-line
 
                      " %1"
-                     which-func-format
+                     '(:eval (unless (member major-mode jjpandari/which-function-mode-line-off-modes) which-func-format))
 
                      ;; git info
-                     `(vc-mode vc-mode)
+                     '(:eval (when vc-mode
+                               (propertize " " 'face '(:family "all-the-icons" :height 0.9))))
+                     '(:eval (s-replace " Git:" "" (s-replace " Git-" "" (s-replace " Git@" "" vc-mode))))
+                     ;; '(:eval (replace-regexp-in-string " Git\(@\|:\|-\)" "" vc-mode))
 
                      ;; minor modes
                      ;; minor-mode-alist
