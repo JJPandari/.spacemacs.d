@@ -79,6 +79,7 @@ This function should only modify configuration layer settings."
                                       ;; helm-smex
                                       color-theme-sanityinc-tomorrow
                                       solarized-theme
+                                      doom-themes
                                       ;; (sunburn :location (recipe :fetcher github :repo "chrisdone/zenburn"))
                                       ;; atom-one-dark-theme
                                       ;; company-jedi
@@ -475,7 +476,7 @@ before packages are loaded."
   ;;                           )))
 
   (require 'solarized-theme)
-  ;; (require 'atom-one-dark-theme)
+  (require 'doom-themes)
   (require 'ranger)
   (require 'all-the-icons)
 
@@ -498,7 +499,7 @@ before packages are loaded."
    initial-frame-alist (quote ((fullscreen . maximized)))
    ;; auto-save-default nil
    org-src-fontify-natively t
-   org-agenda-files '("~")
+   org-agenda-files '("~/org")
    auto-mode-alist (append
                     '(("\\.zsh\\'" . shell-script-mode)
                       ("\\.vue\\'" . web-mode)
@@ -556,8 +557,11 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
-  (spacemacs/set-leader-keys "'" 'evil-avy-goto-char-2)
+  (spacemacs/set-leader-keys "'" 'evil-avy-goto-char)
   (define-key evil-normal-state-map (kbd "C-q") 'spacemacs/evil-search-clear-highlight)
+  (define-key prog-mode-map (kbd "H-c") 'aya-create)
+  (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
+  (define-key prog-mode-map (kbd "H-w") 'aya-persist-snippet)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
@@ -797,13 +801,12 @@ If COUNT is given, move COUNT - 1 lines downward first."
         ;; prevent "c$" and "d$" from deleting blank lines
         (setq evil-this-type 'exclusive))))
 
-  (spacemacs/set-leader-keys "od" 'browse-file-directory)
-
   (with-eval-after-load 'web-mode
     (setq
      web-mode-style-padding 0
      web-mode-script-padding 0
-     web-mode-block-padding 0)
+     web-mode-block-padding 0
+     web-mode-comment-formats '(("java" . "//") ("javascript" . "//") ("php" . "//")))
     (setq-default
      web-mode-markup-indent-offset 2
      web-mode-code-indent-offset 2

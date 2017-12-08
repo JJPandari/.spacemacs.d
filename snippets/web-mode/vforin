@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: vforin
+# key: vforin
+# --
+v-for="($1, $2) in $3" :key="$1.id"

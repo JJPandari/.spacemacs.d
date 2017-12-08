@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: vforof
+# key: vforof
+# --
+v-for="$1 of $2" :key="$1.id"

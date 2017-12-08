@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: vmn
+# key: vmn
+# --
+v-model.number="$1"

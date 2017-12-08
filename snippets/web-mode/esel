@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: esel
+# key: esel
+# --
+<el-select v-model${1:.number}="$2">
+  <el-option ${3::}label="$4"></el-option>
+</el-select>

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: erad
+# key: erad
+# --
+<el-radio v-model="$2" ${3::}label="$4">$1</el-radio>

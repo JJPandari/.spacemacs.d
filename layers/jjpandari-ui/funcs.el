@@ -71,13 +71,13 @@
                   (list
                    (propertize "❌" 'face '(:family "Apple Color Emoji" :height 0.7))
                    (propertize (format "%s" (or no-errors 0))
-                               'face face))
+                               'face 'error))
                 nil)
               (if no-warnings
                   (list
                    (propertize "⚠" 'face '(:family "Apple Color Emoji" :height 0.8))
                    (propertize (format "%s" (or no-warnings 0))
-                               'face face))
+                               'face 'warning))
                 nil)
               )))
           (`interrupted ".")
@@ -149,8 +149,9 @@
 
                      ;; git info
                      '(:eval (when vc-mode
-                               (propertize " " 'face '(:family "all-the-icons" :height 0.9))))
-                     '(:eval (s-replace " Git:" "" (s-replace " Git-" "" (s-replace " Git@" "" vc-mode))))
+                               (concat
+                                (propertize " " 'face '(:family "all-the-icons" :height 0.9))
+                                (s-replace " Git:" "" (s-replace " Git-" "" (s-replace " Git@" "" vc-mode))))))
                      ;; '(:eval (replace-regexp-in-string " Git\(@\|:\|-\)" "" vc-mode))
 
                      ;; minor modes
@@ -160,7 +161,7 @@
                      ;; global-mode-string (like org) goes in mode-line-misc-info
                      ;; mode-line-misc-info
 
-                     '(:eval (or org-pomodoro-mode-line org-mode-line-string))
+                     '(:eval (if (boundp 'org-pomodoro-mode-line) org-pomodoro-mode-line org-mode-line-string))
 
                      (mode-line-fill 'mode-line 20)
 

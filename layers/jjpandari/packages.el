@@ -141,7 +141,7 @@ Each entry is either:
     ;; (spacemacs/set-leader-keys "bb" 'ivy-switch-buffer)
     ;; (spacemacs/set-leader-keys "fr" 'counsel-recentf)
     (spacemacs/set-leader-keys "pf" 'jjpandari/open-project-file)
-    (spacemacs/set-leader-keys "sg" 'counsel-git-grep)
+    (spacemacs/set-leader-keys "og" 'counsel-git-grep)
     ;; (spacemacs/set-leader-keys "ss" 'swiper)
     ;; (spacemacs/set-leader-keys "ry" 'counsel-yank-pop)
     ;; (spacemacs/set-leader-keys "Ts" 'counsel-load-theme)
