@@ -241,11 +241,17 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 15
-                               :weight normal
-                               :width normal
-                               :powerline-scale 1.1)
+   dotspacemacs-default-font (if (eq system-type 'darwin)
+                                 '("Source Code Pro"
+                                   :size 15
+                                   :weight normal
+                                   :width normal
+                                   :powerline-scale 1.1)
+                               '("Source Code Pro"
+                                 :size 18
+                                 :weight normal
+                                 :width normal
+                                 :powerline-scale 1.1))
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands `M-x' (after pressing on the leader key).
@@ -572,6 +578,7 @@ before packages are loaded."
   (evil-define-key 'insert js2-mode-map (kbd "C-l") #'emmet-expand-yas)
   (evil-define-key 'insert web-mode-map (kbd "C-l") #'emmet-expand-yas)
 
+  ;; https://stackoverflow.com/a/22114743/4788022
   (defun insert-curly-and-go-inside ()
     "Insert {}.
 Threat is as function body when from endline before )"
@@ -582,16 +589,6 @@ Threat is as function body when from endline before )"
     (indent-according-to-mode)
     )
   (evil-define-key 'insert prog-mode-map (kbd "<C-return>") 'insert-curly-and-go-inside)
-
-  (defun insert-semi-at-eol ()
-    "Insert semicolon at end of line."
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (insert ";")
-      )
-    )
-  (define-key evil-insert-state-map (kbd "C-;") 'insert-semi-at-eol)
 
   (defun jjpandari/evil-search-symbol-forward ()
     "Search forward for symbol under point."
