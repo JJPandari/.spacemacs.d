@@ -88,6 +88,12 @@ This function should only modify configuration layer settings."
                                       all-the-icons
                                       all-the-icons-dired
                                       smex
+                                      keyfreq
+                                      lsp-mode
+                                      company-lsp
+                                      lsp-ui
+                                      lsp-javascript-typescript
+                                      lsp-vue
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -143,7 +149,7 @@ This function should only modify configuration layer settings."
                                     spinner
                                     tagedit
                                     flyspell
-                                    company-tern
+                                    ;; company-tern
                                     projectile
                                     diff-hl
                                     spaceline
@@ -528,10 +534,20 @@ before packages are loaded."
    evil-move-beyond-eol nil
    )
 
+  (ranger-override-dired-mode t)
+
   ;; http://emacs.stackexchange.com/a/20717/12854
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'evil-write-all)
+  (define-key evil-normal-state-map (kbd "C-m") 'evilmi-jump-items)
+  (define-key evil-insert-state-map (kbd "C-m") 'evilmi-jump-items)
+  (define-key evil-insert-state-map (kbd "<return>") 'newline-and-indent)
+  (define-key evil-visual-state-map (kbd "C-m") 'evilmi-jump-items)
+  (define-key evil-motion-state-map (kbd "C-m") 'evilmi-jump-items)
+  (define-key evil-operator-state-map (kbd "C-m") 'evilmi-jump-items)
+  (define-key evil-inner-text-objects-map (kbd "m") 'evilmi-inner-text-object)
+  (define-key evil-outer-text-objects-map (kbd "m") 'evilmi-outer-text-object)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
@@ -550,7 +566,8 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-t") 'evil-execute-in-normal-state)
   (define-key evil-insert-state-map (kbd "C-b") 'delete-char)
   (define-key evil-insert-state-map (kbd "C-o") 'evil-open-below)
-  (define-key evil-insert-state-map (kbd "C-y") 'evil-open-above)
+  (define-key evil-insert-state-map (kbd "C-S-o") 'evil-open-above)
+  (define-key evil-insert-state-map (kbd "C-y") (lambda () (interactive) (evil-paste-from-register 34))) ;; 34 is "
   (define-key evil-insert-state-map (kbd "C-d") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
@@ -561,9 +578,13 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
   (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
+  (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/mark-word)
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
-  (spacemacs/set-leader-keys "'" 'evil-avy-goto-char)
+  (define-key evil-normal-state-map (kbd "TAB") #'spacemacs/alternate-window)
+  (spacemacs/set-leader-keys "," #'evil-indent)
+  (defun jjpandari/adjust-window () (golden-ratio-adjust 1))
+  (advice-add #'spacemacs/alternate-window :after #'jjpandari/adjust-window)
   (define-key evil-normal-state-map (kbd "C-q") 'spacemacs/evil-search-clear-highlight)
   (define-key prog-mode-map (kbd "H-c") 'aya-create)
   (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
@@ -625,8 +646,7 @@ Threat is as function body when from endline before )"
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    (define-key company-active-map (kbd "<C-m>") #'company-complete-common)
-    (define-key company-active-map (kbd "RET") nil)
+    (define-key company-active-map (kbd "C-m") #'company-complete-common)
     (define-key company-active-map (kbd "<return>") nil)
     (define-key company-active-map (kbd "TAB") #'company-complete-selection)
     (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
@@ -653,6 +673,7 @@ Threat is as function body when from endline before )"
     (define-key emmet-mode-keymap (kbd "C-j") #'evil-scroll-line-down)
     )
 
+  ;; https://emacs.stackexchange.com/a/7925/12854
   (defun check-expansion ()
     (save-excursion
       (if (looking-at "\\_>") t
@@ -730,7 +751,7 @@ Threat is as function body when from endline before )"
     (define-key yas-keymap (kbd "TAB") nil)
     (define-key yas-keymap (kbd "<tab>") nil)
     (define-key yas-keymap [(control tab)] 'yas-next-field)
-    (define-key yas-keymap (kbd "RET") #'yas-next-field)
+    (define-key yas-keymap (kbd "<return>") #'yas-next-field)
     (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
     (define-key yas-keymap (kbd "C-d") nil)
     (define-key yas-keymap (kbd "C-b") 'yas-skip-and-clear-or-delete-char)
@@ -758,11 +779,13 @@ Threat is as function body when from endline before )"
                                            ;; (setq indent-tabs-mode t)
                                            ;; (add-to-list 'company-backends 'company-jedi)
                                            )))
-  ;; (add-hook 'js2-mode-hook (lambda () (flycheck-select-checker 'standard)))
+  ;; (with-eval-after-load 'js2-mode
+  ;;   (require 'lsp-javascript-typescript))
   (add-hook 'js2-mode-hook (lambda () (progn
                                     ;; (modify-syntax-entry ?_ "\_" js2-mode-syntax-table)
                                     ;; (modify-syntax-entry ?$ "\_" js2-mode-syntax-table)
                                     ;; (flycheck-mode -1)
+                                    ;; (lsp-javascript-typescript-enable)
                                     (js2-refactor-mode 1))) t)
   (setq js2-global-externs '("$" "jQuery" "jquery" "_"))
   (setq js2-mode-show-parse-errors nil)
@@ -815,13 +838,35 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
     (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
     (setq company-backends-web-mode (cdr company-backends-web-mode)) ;; company-css & company-html super slow on osx
-    (add-hook 'web-mode-hook (lambda () (setq company-minimum-prefix-length 2
-                                         web-mode-style-padding 0
-                                         web-mode-script-padding 0
-                                         web-mode-block-padding 0)
-                               (let ((current-prefix-arg 1)) (call-interactively 'flycheck-disable-checker))
-                               ) t) ;; overwrite spacemacs' hook's settings
     (flycheck-add-mode 'javascript-eslint 'web-mode)
+    ;; (add-to-list 'company-backends-web-mode 'company-lsp)
+    ;; (require 'lsp-vue)
+
+    ;; https://stackoverflow.com/a/21656063/4788022
+    (defun jjpandari/merge-imenu (index-fun)
+      (interactive)
+      (let ((mode-imenu (funcall index-fun))
+            (custom-imenu (imenu--generic-function imenu-generic-expression)))
+        (append custom-imenu mode-imenu)))
+
+    (add-hook
+     'web-mode-hook
+     (lambda ()
+       (setq company-minimum-prefix-length 2 ;; overwrite spacemacs' hook's settings
+             web-mode-style-padding 0
+             web-mode-script-padding 0
+             web-mode-block-padding 0)
+       ;; the next line causes an error, why did I add it?
+       ;; (let ((current-prefix-arg 1)) (call-interactively 'flycheck-disable-checker nil (vector 'javascript-eslint)))
+       ;; (lsp-vue-enable)
+       (setq imenu-create-index-function (lambda () (jjpandari/merge-imenu 'web-mode-imenu-index)))
+       (when (equal (file-name-extension buffer-file-name) "vue")
+         (setq
+          imenu-generic-expression
+          '(("method" "^    \\([^ ]+\\)(.*) {" 1)
+            ("prop" "^  \\([^ ]+\\): {" 1)
+            ("hook" "^  \\([^ ]+\\)() {" 1))))) t)
+
     )
 
   (with-eval-after-load 'flycheck (setq flycheck-idle-change-delay 1))
@@ -850,7 +895,9 @@ If COUNT is given, move COUNT - 1 lines downward first."
     "switch to emacs frame"
     (select-frame-set-input-focus (selected-frame)))
 
-  (spacemacs/set-leader-keys "oy" (lambda () (interactive) (make-cd-for-terminal)))
+  (spacemacs/set-leader-keys "oy" 'make-cd-for-terminal)
+  (spacemacs/set-leader-keys "oi" 'ibuffer)
+  (spacemacs/set-leader-keys "oa" 'counsel-ag)
 
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
 
@@ -858,5 +905,107 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (evil-define-key 'evilified image-mode-map (kbd "p") #'image-previous-file)
     (evil-define-key 'evilified image-mode-map (kbd "n") #'image-next-file)
   )
+
+  (require 'keyfreq)
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1)
+  (setq keyfreq-excluded-commands '(self-insert-command
+                                    forward-char
+                                    backward-char
+                                    next-line
+                                    previous-line
+                                    evil-a-WORD
+                                    evil-append
+                                    evil-backward-char
+                                    evil-backward-word-begin
+                                    evil-change
+                                    evil-change-line
+                                    evil-complete-next
+                                    evil-complete-previous
+                                    evil-delete
+                                    evil-delete-backward-char-and-join
+                                    evil-delete-char
+                                    evil-delete-line
+                                    evil-emacs-state
+                                    evil-end-of-line
+                                    evil-escape-emacs-state
+                                    evil-escape-insert-state
+                                    evil-escape-isearch
+                                    evil-escape-minibuffer
+                                    evil-escape-motion-state
+                                    evil-escape-visual-state
+                                    evil-ex
+                                    evil-ex-command
+                                    evil-ex-completion
+                                    evil-ex-delete-backward-char
+                                    evil-exit-emacs-state
+                                    evil-exit-visual-state
+                                    evil-filepath-inner-text-object
+                                    evil-filepath-outer-text-object
+                                    evil-find-char
+                                    evil-find-char-to
+                                    evil-first-non-blank
+                                    evil-force-normal-state
+                                    evil-forward-char
+                                    evil-forward-word-begin
+                                    evil-forward-word-end
+                                    evil-forward-WORD-end
+                                    evil-forward-WORD-begin
+                                    evil-backward-WORD-begin
+                                    evil-backward-WORD-end
+                                    evil-goto-definition
+                                    evil-goto-first-line
+                                    evil-goto-line
+                                    evil-goto-mark-line
+                                    evil-indent
+                                    evil-inner-WORD
+                                    evil-inner-double-quote
+                                    evil-inner-single-quote
+                                    evil-inner-word
+                                    evil-insert
+                                    evil-join
+                                    evil-jump-backward
+                                    evil-jump-forward
+                                    evil-mc-make-and-goto-next-match
+                                    evil-next-line
+                                    evil-next-visual-line
+                                    evil-normal-state
+                                    evil-open-below
+                                    evil-paste-after
+                                    evil-paste-before
+                                    evil-previous-line
+                                    evil-previous-visual-line
+                                    evil-record-macro
+                                    evil-repeat
+                                    evil-replace
+                                    evil-ret
+                                    evil-scroll-page-down
+                                    evil-scroll-page-up
+                                    evil-search-forward
+                                    evil-search-next
+                                    evil-search-word-forward
+                                    evil-set-marker
+                                    evil-substitute
+                                    evil-visual-block
+                                    evil-visual-char
+                                    evil-visual-line
+                                    evil-yank
+                                    evil-ex-search-next
+                                    evil-ex-search-previous
+                                    evil-scroll-down
+                                    evil-scroll-up
+                                    evil-scroll-line-down
+                                    evil-scroll-line-up
+                                    ivy-done
+                                    ivy-next-line
+                                    ivy-previous-line
+                                    undo-tree-undo
+                                    undo-tree-redo))
+
+  ;; (with-eval-after-load 'lsp-mode
+  ;;   (require 'lsp-flycheck))
+  ;; (require 'lsp-mode)
+  ;; (require 'company-lsp)
+  ;; (add-to-list 'company-backends 'company-lsp)
 
   )

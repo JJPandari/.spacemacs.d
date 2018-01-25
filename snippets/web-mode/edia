@@ -1,0 +1,7 @@
+# key: edia
+# name: edia
+# --
+<el-dialog title="$1" :visible.sync="${2:dialog}.visible"
+            width="${3:5}0%" class="dialog">
+  $0
+</el-dialog>

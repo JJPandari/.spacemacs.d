@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: econf
+# key: econf
+# --
+this.\$confirm(${1:\`确定要删除${2:什么东东} \${${3:item}.${4:name}} 吗?\`}, '提示', {
+  confirmButtonText: '确定',
+  cancelButtonText: '取消',
+  type: 'warning'
+}).then(() => {
+  ${5:deleteAPI}($3.${6:id}).then(res => {
+    this.$message.success(${7:'删除成功'}${8:res.${9:msg}});
+    this.${0:search}();
+  });
+});

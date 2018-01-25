@@ -1,0 +1,7 @@
+# key: efor
+# name: efor
+# --
+<el-form${1: inline} ${2:label-width="${3:120px}"}>
+  <el-form-item label="">
+  </el-form-item>
+</el-form>

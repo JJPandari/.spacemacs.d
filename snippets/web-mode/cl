@@ -1,5 +1,11 @@
 # -*- mode: snippet -*-
-# name: cl
+# name: cl (command)
 # key: cl
+# type: command
 # --
-console.log($1);
+(let ((in-js-p
+       (save-excursion
+         (move-beginning-of-line 1)
+         (looking-at "^[ \t]*$"))))
+  (yas-expand-snippet
+   (if in-js-p "console.log($1);" "class=\"$1\"")))

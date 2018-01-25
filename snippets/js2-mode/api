@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor:
+# name: api
+# key: api
+# --
+$1($2).then(res => {
+  $0
+});

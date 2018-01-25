@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: ebut
+# key: ebut
+# --
+<el-button ${1:type="primary"} @click="$2"${3: size="small"}>$4</el-button>

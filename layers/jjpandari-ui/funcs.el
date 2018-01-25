@@ -151,7 +151,7 @@
                      '(:eval (when vc-mode
                                (concat
                                 (propertize " " 'face '(:family "all-the-icons" :height 0.9))
-                                (s-replace " Git:" "" (s-replace " Git-" "" (s-replace " Git@" "" vc-mode))))))
+                                (s-replace " Git" "" vc-mode))))
                      ;; '(:eval (replace-regexp-in-string " Git\(@\|:\|-\)" "" vc-mode))
 
                      ;; minor modes
@@ -161,7 +161,10 @@
                      ;; global-mode-string (like org) goes in mode-line-misc-info
                      ;; mode-line-misc-info
 
-                     '(:eval (if (boundp 'org-pomodoro-mode-line) org-pomodoro-mode-line org-mode-line-string))
+                     ;; TODO Error during redisplay:
+                     ;; (eval (if (boundp (quote org-pomodoro-mode-line)) org-pomodoro-mode-line org-mode-line-string))
+                     ;; signaled (void-variable org-mode-line-string)
+                     ;; '(:eval (if (boundp 'org-pomodoro-mode-line) org-pomodoro-mode-line org-mode-line-string))
 
                      (mode-line-fill 'mode-line 20)
 

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: todo
+# key: /tt
+# type: command
+# --
+(insert "TODO ")
+(evilnc-comment-or-uncomment-lines 1)
+(move-end-of-line 1)
+;; expand an empty snippet
+;; otherwise my tab function would think the expand fails and invoke company/hippie-expand
+(yas-expand-snippet "")

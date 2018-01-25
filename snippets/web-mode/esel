@@ -4,5 +4,5 @@
 # key: esel
 # --
 <el-select v-model${1:.number}="$2">
-  <el-option ${3::}label="$4"></el-option>
+  <el-option ${3::}label="$4" ${5::}value="$6"></el-option>
 </el-select>

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: vcl
+# key: vcl
+# --
+@click="$1"

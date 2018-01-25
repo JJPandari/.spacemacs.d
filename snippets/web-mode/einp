@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: einp
+# key: einp
+# --
+<el-input v-model${1:.number}="$2"></el-input>

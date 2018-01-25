@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: esuc
+# key: esuc
+# --
+this.$message.success('$1');

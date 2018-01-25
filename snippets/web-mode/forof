@@ -3,6 +3,6 @@
 # name: forof
 # key: forof
 # --
-for($1 of $2) {
-    $3
+for(const $1 of $2) {
+    $0
 }
