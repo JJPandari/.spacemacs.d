@@ -540,12 +540,6 @@ before packages are loaded."
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'evil-write-all)
-  (define-key evil-normal-state-map (kbd "C-m") 'evilmi-jump-items)
-  (define-key evil-insert-state-map (kbd "C-m") 'evilmi-jump-items)
-  (define-key evil-insert-state-map (kbd "<return>") 'newline-and-indent)
-  (define-key evil-visual-state-map (kbd "C-m") 'evilmi-jump-items)
-  (define-key evil-motion-state-map (kbd "C-m") 'evilmi-jump-items)
-  (define-key evil-operator-state-map (kbd "C-m") 'evilmi-jump-items)
   (define-key evil-inner-text-objects-map (kbd "m") 'evilmi-inner-text-object)
   (define-key evil-outer-text-objects-map (kbd "m") 'evilmi-outer-text-object)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
