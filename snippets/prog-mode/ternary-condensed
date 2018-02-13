@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: condensed ternary expression
+# key: ter
+# --
+$1?$2:$3

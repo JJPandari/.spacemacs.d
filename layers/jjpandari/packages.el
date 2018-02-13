@@ -37,6 +37,7 @@
     counsel
     ;; indium
     company-flx
+    rjsx-mode
 
     ;; nyan-mode
     ;; all-the-icons-ivy
@@ -159,9 +160,61 @@ Each entry is either:
       )
     ))
 
+(defun jjpandari/init-rjsx-mode ()
+  (use-package rjsx-mode
+    :init
+    (setq
+     magic-mode-alist (append
+                       '(("import\s+.+\s+from\s+['\"]react['\"]" . rjsx-mode))
+                       magic-mode-alist))
+    :config
+    (evil-define-key 'insert rjsx-mode-map (kbd "C-b") #'rjsx-delete-creates-full-tag)
+    (evil-matchit-mode)
+    ;; major leader not inherited from js2-mode / js2-jsx-mode ?
+    (spacemacs/set-leader-keys-for-major-mode 'rjsx-mode
+        "r3i" 'js2r-ternary-to-if
+        "rag" 'js2r-add-to-globals-annotation
+        "rao" 'js2r-arguments-to-object
+        "rba" 'js2r-forward-barf
+        "rca" 'js2r-contract-array
+        "rco" 'js2r-contract-object
+        "rcu" 'js2r-contract-function
+        "rea" 'js2r-expand-array
+        "ref" 'js2r-extract-function
+        "rem" 'js2r-extract-method
+        "reo" 'js2r-expand-object
+        "reu" 'js2r-expand-function
+        "rev" 'js2r-extract-var
+        "rig" 'js2r-inject-global-in-iife
+        "rip" 'js2r-introduce-parameter
+        "riv" 'js2r-inline-var
+        "rlp" 'js2r-localize-parameter
+        "rlt" 'js2r-log-this
+        "rrv" 'js2r-rename-var
+        "rsl" 'js2r-forward-slurp
+        "rss" 'js2r-split-string
+        "rsv" 'js2r-split-var-declaration
+        "rtf" 'js2r-toggle-function-expression-and-declaration
+        "ruw" 'js2r-unwrap
+        "rvt" 'js2r-var-to-this
+        "rwi" 'js2r-wrap-buffer-in-iife
+        "rwl" 'js2r-wrap-in-for-loop
+        "k" 'js2r-kill
+        "xmj" 'js2r-move-line-down
+        "xmk" 'js2r-move-line-up)
+    ))
+
+;; -----unused-----
+
 (defun jjpandari/init-indium ()
   (use-package indium
     ))
+
+(defun jjpandari/init-company-flx ()
+  (use-package company-flx
+    :init
+    (with-eval-after-load 'company
+      (company-flx-mode 1))))
 
 (defun jjpandari/init-nyan-mode ()
   (use-package nyan-mode
@@ -172,11 +225,5 @@ Each entry is either:
   (use-package all-the-icons-ivy
     :config
     (all-the-icons-ivy-setup)))
-
-(defun jjpandari/init-company-flx ()
-  (use-package company-flx
-    :init
-    (with-eval-after-load 'company
-      (company-flx-mode 1))))
 
 ;;; packages.el ends here

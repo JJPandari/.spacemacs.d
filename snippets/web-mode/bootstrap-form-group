@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# contributor: nali
+# name: bootstrap-form-group
+# key: fg
+# --
+<div class="form-group row">
+  <label for="${1:id?}" class="col-sm-2 col-form-label">${2:label text?}</label>
+  <div class="col-sm-10">
+    <input id="$1" name="${3:name?}" type="text" class="form-control">
+  </div>
+</div>

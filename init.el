@@ -583,6 +583,7 @@ before packages are loaded."
   (define-key prog-mode-map (kbd "H-c") 'aya-create)
   (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
   (define-key prog-mode-map (kbd "H-w") 'aya-persist-snippet)
+  (evil-define-key 'normal org-mode-map (kbd "g o") #'org-todo)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
@@ -738,6 +739,8 @@ Threat is as function body when from endline before )"
   (define-key company-active-map (kbd "C-k") nil)
   (define-key company-active-map (kbd "C-d") nil)
   (define-key company-active-map (kbd "C-b") 'company-show-doc-buffer)
+  (define-key company-active-map (kbd "C-s") nil)
+  (define-key company-active-map (kbd "C-/") nil)
 
   (with-eval-after-load 'yasnippet
     ;; (define-key yas-keymap [tab] 'tab-complete-or-next-field)
@@ -1001,5 +1004,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   ;; (require 'lsp-mode)
   ;; (require 'company-lsp)
   ;; (add-to-list 'company-backends 'company-lsp)
+
+  (setq auto-revert-check-vc-info t)
 
   )
