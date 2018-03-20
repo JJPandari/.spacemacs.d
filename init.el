@@ -80,15 +80,14 @@ This function should only modify configuration layer settings."
                                       color-theme-sanityinc-tomorrow
                                       solarized-theme
                                       doom-themes
-                                      ;; (sunburn :location (recipe :fetcher github :repo "chrisdone/zenburn"))
-                                      ;; atom-one-dark-theme
                                       ;; company-jedi
                                       ;; vue-mode
-                                      xo
                                       all-the-icons
                                       all-the-icons-dired
                                       smex
                                       keyfreq
+                                      lispy
+
                                       lsp-mode
                                       company-lsp
                                       lsp-ui
@@ -149,7 +148,7 @@ This function should only modify configuration layer settings."
                                     spinner
                                     tagedit
                                     flyspell
-                                    ;; company-tern
+                                    company-tern
                                     projectile
                                     diff-hl
                                     spaceline
@@ -474,18 +473,6 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  ;; ;; atom-one-light
-  ;; (custom-set-variables '(spacemacs-theme-custom-colors
-  ;;                         '(
-  ;;                           (base . "#24292e")
-  ;;                           (keyword . "#A626A4")
-  ;;                           (str . "#50A14F")
-  ;;                           (const . "#986801")
-  ;;                           (bg1 . "#FAFAFA")
-  ;;                           (bg2 . "#E5E5E5")
-  ;;                           (bg3 . "#CECECE")
-  ;;                           (bg4 . "#AAA")
-  ;;                           )))
 
   (require 'solarized-theme)
   (require 'doom-themes)
@@ -572,7 +559,8 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
   (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
-  (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/mark-word)
+  (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/expand-region)
+  (define-key evil-insert-state-map (kbd "H-v") #'yank-pop)
   (spacemacs/set-leader-keys "(" #'backward-up-list)
   (spacemacs/set-leader-keys ")" #'up-list)
   (define-key evil-normal-state-map (kbd "TAB") #'spacemacs/alternate-window)
@@ -584,6 +572,12 @@ before packages are loaded."
   (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
   (define-key prog-mode-map (kbd "H-w") 'aya-persist-snippet)
   (evil-define-key 'normal org-mode-map (kbd "g o") #'org-todo)
+  (define-key evil-normal-state-map (kbd "M") 'evilmi-jump-items)
+  (define-key evil-visual-state-map (kbd "M") 'evilmi-jump-items)
+  (define-key evil-operator-state-map (kbd "M") 'evilmi-jump-items)
+  (spacemacs/set-leader-keys-for-major-mode 'snippet-mode
+    "," 'yas-load-snippet-buffer-and-close
+    "l" 'yas-load-snippet-buffer)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
@@ -615,7 +609,7 @@ Threat is as function body when from endline before )"
   (define-key evil-motion-state-map (kbd "*") 'jjpandari/evil-search-symbol-forward)
 
   (defun jjpandari/evil-search-symbol-backward ()
-    "Search forward for symbol under point."
+    "Search backward for symbol under point."
     (interactive)
     (evil-ex-search-word-backward 1 t)
     )
@@ -823,6 +817,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
      web-mode-style-padding 0
      web-mode-script-padding 0
      web-mode-block-padding 0
+     web-mode-enable-current-element-highlight t
      web-mode-comment-formats '(("java" . "//") ("javascript" . "//") ("php" . "//")))
     (setq-default
      web-mode-markup-indent-offset 2
@@ -830,6 +825,9 @@ If COUNT is given, move COUNT - 1 lines downward first."
      web-mode-css-indent-offset 2)
     (modify-syntax-entry ?' "\"" web-mode-syntax-table)
     (modify-syntax-entry ?` "\"" web-mode-syntax-table)
+    ;; "-" as word so company completes kabeb-case
+    (modify-syntax-entry ?_ "w" web-mode-syntax-table)
+    (modify-syntax-entry ?- "w" web-mode-syntax-table)
     (define-key web-mode-map (kbd "TAB") nil)
     (define-key web-mode-map (kbd "<tab>") nil)
     (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
@@ -838,13 +836,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     ;; (add-to-list 'company-backends-web-mode 'company-lsp)
     ;; (require 'lsp-vue)
-
-    ;; https://stackoverflow.com/a/21656063/4788022
-    (defun jjpandari/merge-imenu (index-fun)
-      (interactive)
-      (let ((mode-imenu (funcall index-fun))
-            (custom-imenu (imenu--generic-function imenu-generic-expression)))
-        (append custom-imenu mode-imenu)))
 
     (add-hook
      'web-mode-hook
@@ -859,7 +850,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
        (setq imenu-create-index-function (lambda () (jjpandari/merge-imenu 'web-mode-imenu-index)))
        (when (equal (file-name-extension buffer-file-name) "vue")
          (setq
-          imenu-generic-expression
+          imenu-generic-expression ; imenu regexps for vue.js
           '(("method" "^    \\([^ ]+\\)(.*) {" 1)
             ("prop" "^  \\([^ ]+\\): {" 1)
             ("hook" "^  \\([^ ]+\\)() {" 1))))) t)
@@ -895,6 +886,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (spacemacs/set-leader-keys "oy" 'make-cd-for-terminal)
   (spacemacs/set-leader-keys "oi" 'ibuffer)
   (spacemacs/set-leader-keys "oa" 'counsel-ag)
+  (spacemacs/set-leader-keys "ov" 'yas-visit-snippet-file)
+  (spacemacs/set-leader-keys "os" 'yas-new-snippet)
 
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
 

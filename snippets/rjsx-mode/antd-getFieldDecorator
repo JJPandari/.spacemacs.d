@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: antd's getFieldDecorator
+# key: dec
+# --
+getFieldDecorator('${1:field name}'${2:, {initialValue: $3}})(
+  $0
+)

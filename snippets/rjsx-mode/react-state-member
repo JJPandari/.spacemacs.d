@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: react state member
+# key: st
+# --
+this.state.$0

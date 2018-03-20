@@ -1,5 +1,6 @@
 ;; definition of general utility functions
 
+;; https://emacs-china.org/t/topic/4494/25?u=jjpandari
 (defun insert-or-remove-trailing-char (c)
   (let ((fn (lambda (c)
               (end-of-line)
@@ -66,3 +67,25 @@
     (deactivate-mark)
     (indent-for-tab-command))
   )
+
+;; like web-mode-on-post-command
+(defun jjpandari/on-post-newline ()
+  "Insert an extra line if inside a tag."
+  (let (n)
+    (when (and (member this-command '(newline electric-newline-and-maybe-indent newline-and-indent))
+               (and (looking-back ">\n[\s\t]*" (point-min))
+                    (not (looking-back "/[^>]*>\n[\s\t]*" (point-min)))
+                    (looking-at "[\s\t]*</")
+                    ))
+      (newline-and-indent)
+      (forward-line -1)
+      (indent-according-to-mode)
+      )
+    ))
+
+;; https://stackoverflow.com/a/21656063/4788022
+(defun jjpandari/merge-imenu (index-fun)
+  (interactive)
+  (let ((mode-imenu (funcall index-fun))
+        (custom-imenu (imenu--generic-function imenu-generic-expression)))
+    (append custom-imenu mode-imenu)))

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: 
+# name: lambda for jsx tag
+# key: taglam
+# --
+${1:()} => (
+    $0
+)

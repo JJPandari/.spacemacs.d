@@ -167,9 +167,20 @@ Each entry is either:
      magic-mode-alist (append
                        '(("import\s+.+\s+from\s+['\"]react['\"]" . rjsx-mode))
                        magic-mode-alist))
+    (add-hook
+     'rjsx-mode-hook
+     (lambda () (flycheck-mode 1)
+       (evil-matchit-mode 1)
+       (add-hook 'post-command-hook 'jjpandari/on-post-newline nil t)
+       (setq imenu-create-index-function (lambda () (jjpandari/merge-imenu 'js2-mode-create-imenu-index)))
+       (setq
+        imenu-generic-expression
+        '((nil "^  \\(state\\) = {" 1)))
+       ))
     :config
     (evil-define-key 'insert rjsx-mode-map (kbd "C-b") #'rjsx-delete-creates-full-tag)
-    (evil-matchit-mode)
+    (modify-syntax-entry ?_ "w" rjsx-mode-syntax-table)
+
     ;; major leader not inherited from js2-mode / js2-jsx-mode ?
     (spacemacs/set-leader-keys-for-major-mode 'rjsx-mode
         "r3i" 'js2r-ternary-to-if
@@ -201,7 +212,8 @@ Each entry is either:
         "rwl" 'js2r-wrap-in-for-loop
         "k" 'js2r-kill
         "xmj" 'js2r-move-line-down
-        "xmk" 'js2r-move-line-up)
+        "xmk" 'js2r-move-line-up
+        "t" 'rjsx-rename-tag-at-point)
     ))
 
 ;; -----unused-----
