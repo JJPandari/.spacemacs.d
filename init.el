@@ -87,6 +87,7 @@ This function should only modify configuration layer settings."
                                       smex
                                       keyfreq
                                       lispy
+                                      edit-server
 
                                       lsp-mode
                                       company-lsp
@@ -548,7 +549,8 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-b") 'delete-char)
   (define-key evil-insert-state-map (kbd "C-o") 'evil-open-below)
   (define-key evil-insert-state-map (kbd "C-S-o") 'evil-open-above)
-  (define-key evil-insert-state-map (kbd "C-y") (lambda () (interactive) (evil-paste-from-register 34))) ;; 34 is "
+  ;; 34 is " not using yank cuz it's advised and slow
+  (define-key evil-insert-state-map (kbd "C-y") (lambda () (interactive) (evil-paste-from-register 34)))
   (define-key evil-insert-state-map (kbd "C-d") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
@@ -556,7 +558,8 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
   (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
-  (define-key evil-insert-state-map (kbd "C-v") #'evil-paste-from-register)
+  ;; 34 is " not using yank cuz it's advised and slow
+  (define-key evil-insert-state-map (kbd "C-v") (lambda () (interactive) (evil-paste-from-register 34)))
   (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
   (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/expand-region)
@@ -871,6 +874,18 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
   (server-start)
 
+  (when (require 'edit-server nil t)
+    (setq edit-server-new-frame nil)
+    (edit-server-start))
+  (setq edit-server-url-major-mode-alist
+        '(("github\\.com" . markdown-mode)
+          ("stackoverflow\\.com" . markdown-mode)))
+  (spacemacs/set-leader-keys-for-minor-mode 'edit-server-edit-mode
+    "," 'edit-server-done
+    "a" 'edit-server-abort)
+  (add-hook 'edit-server-start-hook
+            (lambda () (visual-line-mode 1)))
+
   (defun make-cd-for-terminal ()
     "make a cd command for terminal, targeting current buffer file's dir"
     (interactive)
@@ -895,6 +910,14 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (evil-define-key 'evilified image-mode-map (kbd "p") #'image-previous-file)
     (evil-define-key 'evilified image-mode-map (kbd "n") #'image-next-file)
   )
+
+  (setq auto-revert-check-vc-info t)
+
+  ;; (with-eval-after-load 'lsp-mode
+  ;;   (require 'lsp-flycheck))
+  ;; (require 'lsp-mode)
+  ;; (require 'company-lsp)
+  ;; (add-to-list 'company-backends 'company-lsp)
 
   (require 'keyfreq)
   (keyfreq-mode 1)
@@ -991,13 +1014,5 @@ If COUNT is given, move COUNT - 1 lines downward first."
                                     ivy-previous-line
                                     undo-tree-undo
                                     undo-tree-redo))
-
-  ;; (with-eval-after-load 'lsp-mode
-  ;;   (require 'lsp-flycheck))
-  ;; (require 'lsp-mode)
-  ;; (require 'company-lsp)
-  ;; (add-to-list 'company-backends 'company-lsp)
-
-  (setq auto-revert-check-vc-info t)
 
   )

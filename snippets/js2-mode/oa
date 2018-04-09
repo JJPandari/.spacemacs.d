@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: oa
+# key: oa
+# --
+Object.assign(${1:{}}, $0)

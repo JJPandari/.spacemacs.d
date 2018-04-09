@@ -35,10 +35,10 @@
     evil-multiedit
     ivy
     counsel
-    ;; indium
-    company-flx
     rjsx-mode
 
+    ;; company-flx
+    ;; indium
     ;; nyan-mode
     ;; all-the-icons-ivy
     )
@@ -165,7 +165,7 @@ Each entry is either:
     :init
     (setq
      magic-mode-alist (append
-                       '(("import\s+.+\s+from\s+['\"]react['\"]" . rjsx-mode))
+                       '(("import\s-+.+\s-+from\s-+['\"]react['\"]" . rjsx-mode))
                        magic-mode-alist))
     (add-hook
      'rjsx-mode-hook
