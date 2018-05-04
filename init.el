@@ -61,6 +61,8 @@ This function should only modify configuration layer settings."
      autohotkey
      python
      osx
+     lua
+     yaml
 
      jjpandari
      jjpandari-ui
@@ -581,6 +583,9 @@ before packages are loaded."
   (spacemacs/set-leader-keys-for-major-mode 'snippet-mode
     "," 'yas-load-snippet-buffer-and-close
     "l" 'yas-load-snippet-buffer)
+  (define-key evil-normal-state-map (kbd "C-h C-k") 'describe-keymap)
+  (define-key evil-visual-state-map (kbd "C-h C-k") 'describe-keymap)
+  (define-key evil-evilified-state-map (kbd "C-h C-k") 'describe-keymap)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
@@ -912,6 +917,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
   )
 
   (setq auto-revert-check-vc-info t)
+
+  (add-to-list 'evil-evilified-state-modes 'ibuffer-mode)
 
   ;; (with-eval-after-load 'lsp-mode
   ;;   (require 'lsp-flycheck))

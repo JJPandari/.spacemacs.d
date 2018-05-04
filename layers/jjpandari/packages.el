@@ -165,7 +165,7 @@ Each entry is either:
     :init
     (setq
      magic-mode-alist (append
-                       '(("import\s-+.+\s-+from\s-+['\"]react['\"]" . rjsx-mode))
+                       '(("import\s+.+\s+from\s+['\"]react['\"]" . rjsx-mode))
                        magic-mode-alist))
     (add-hook
      'rjsx-mode-hook
@@ -180,6 +180,14 @@ Each entry is either:
     :config
     (evil-define-key 'insert rjsx-mode-map (kbd "C-b") #'rjsx-delete-creates-full-tag)
     (modify-syntax-entry ?_ "w" rjsx-mode-syntax-table)
+
+    (defun jjpandari/import-antd-form-function ()
+      "import the function at point as an antd form util function"
+      (interactive)
+      (let ((fun (thing-at-point 'symbol)))
+        (evil-open-above 1)
+        (insert (format "const { %s } = this.props.form;" fun))
+        (evil-normal-state)))
 
     ;; major leader not inherited from js2-mode / js2-jsx-mode ?
     (spacemacs/set-leader-keys-for-major-mode 'rjsx-mode
@@ -213,7 +221,8 @@ Each entry is either:
         "k" 'js2r-kill
         "xmj" 'js2r-move-line-down
         "xmk" 'js2r-move-line-up
-        "t" 'rjsx-rename-tag-at-point)
+        "t" 'rjsx-rename-tag-at-point
+        "a" 'jjpandari/import-antd-form-function)
     ))
 
 ;; -----unused-----
