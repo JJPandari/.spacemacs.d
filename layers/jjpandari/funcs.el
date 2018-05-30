@@ -89,3 +89,13 @@
   (let ((mode-imenu (funcall index-fun))
         (custom-imenu (imenu--generic-function imenu-generic-expression)))
     (append custom-imenu mode-imenu)))
+
+(defun jjpandari/expand-to-ternary ()
+  "Add a ternary expression, using the symbol before point as the first field."
+  (interactive)
+  (yas-expand-snippet " ? $1 : $0"))
+
+(defun jjpandari/expand-to-ternary-condensed ()
+  "Add a (condensed) ternary expression, using the symbol before point as the first field."
+  (interactive)
+  (yas-expand-snippet "?$1:$0"))

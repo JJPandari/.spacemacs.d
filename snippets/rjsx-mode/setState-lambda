@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: setState with function as argument
+# key: sl
+# --
+this.setState((prevState, props) => {
+  return {${1:prop key}: prevState.$1$0};
+});
