@@ -96,6 +96,7 @@ This function should only modify configuration layer settings."
                                       keyfreq
                                       lispy
                                       edit-server
+                                      eyebrowse
 
                                       lsp-mode
                                       company-lsp
@@ -584,6 +585,7 @@ before packages are loaded."
   (require 'doom-themes)
   (require 'ranger)
   (require 'all-the-icons)
+  (require 'eyebrowse)
 
   (global-company-mode t)
   (golden-ratio-mode t)
@@ -670,10 +672,17 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
   (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/expand-region)
   (define-key evil-insert-state-map (kbd "H-v") #'yank-pop)
-  (spacemacs/set-leader-keys "(" #'backward-up-list)
-  (spacemacs/set-leader-keys ")" #'up-list)
+  (spacemacs/set-leader-keys
+    "(" #'backward-up-list
+    ")" #'up-list
+    "," #'evil-indent
+    "b r" #'rename-buffer
+    "g c" #'magit-commit
+    "g C" #'magit-clone
+    "g p" #'magit-push
+    "g d" #'magit-diff-buffer-file
+    "g D" #'magit-diff)
   (define-key evil-normal-state-map (kbd "TAB") #'spacemacs/alternate-window)
-  (spacemacs/set-leader-keys "," #'evil-indent)
   (defun jjpandari/adjust-window () (golden-ratio-adjust 1))
   (advice-add #'spacemacs/alternate-window :after #'jjpandari/adjust-window)
   (define-key evil-normal-state-map (kbd "C-q") 'spacemacs/evil-search-clear-highlight)
@@ -694,6 +703,25 @@ before packages are loaded."
   (define-key evil-evilified-state-map (kbd "C-h C-k") 'describe-keymap)
   (spacemacs/set-leader-keys-for-major-mode 'erc-mode
     "q" 'erc-quit-server)
+
+  (define-key evil-normal-state-map (kbd "SPC l") nil)
+  (spacemacs/set-leader-keys
+    "l l" #'eyebrowse-switch-to-window-config
+    "l p" #'eyebrowse-prev-window-config
+    "l n" #'eyebrowse-next-window-config
+    "l TAB" #'eyebrowse-last-window-config
+    "l d" #'eyebrowse-close-window-config
+    "l r" #'eyebrowse-rename-window-config
+    "l 0" #'eyebrowse-switch-to-window-config-0
+    "l 1" #'eyebrowse-switch-to-window-config-1
+    "l 2" #'eyebrowse-switch-to-window-config-2
+    "l 3" #'eyebrowse-switch-to-window-config-3
+    "l 4" #'eyebrowse-switch-to-window-config-4
+    "l 5" #'eyebrowse-switch-to-window-config-5
+    "l 6" #'eyebrowse-switch-to-window-config-6
+    "l 7" #'eyebrowse-switch-to-window-config-7
+    "l 8" #'eyebrowse-switch-to-window-config-8
+    "l 9" #'eyebrowse-switch-to-window-config-9)
 
   (define-key minibuffer-local-map (kbd "M-d") #'backward-word)
   (define-key minibuffer-local-map (kbd "M-b") #'kill-word)
