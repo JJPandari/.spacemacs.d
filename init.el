@@ -126,7 +126,6 @@ This function should only modify configuration layer settings."
                                     open-junk-file
                                     coffee-mode
                                     evil-tutor
-                                    eyebrowse
                                     hl-anything
                                     srefactor
                                     livid-mode
