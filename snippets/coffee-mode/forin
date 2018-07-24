@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: for in (array)
+# key: forin
+# --
+for ${2:item} in ${1:arr}
+${0:do}

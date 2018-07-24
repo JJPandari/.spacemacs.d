@@ -68,6 +68,7 @@ This function should only modify configuration layer settings."
      osx
      lua
      yaml
+     coffeescript
 
      jjpandari
      jjpandari-ui
@@ -97,6 +98,11 @@ This function should only modify configuration layer settings."
                                       lispy
                                       edit-server
                                       eyebrowse
+                                      exec-path-from-shell
+                                      youdao-dictionary
+                                      ivy-posframe
+                                      flycheck-posframe
+                                      company-posframe
 
                                       lsp-mode
                                       company-lsp
@@ -124,7 +130,6 @@ This function should only modify configuration layer settings."
                                     highlight-indentation
                                     vi-tilde-fringe
                                     open-junk-file
-                                    coffee-mode
                                     evil-tutor
                                     hl-anything
                                     srefactor
@@ -189,8 +194,8 @@ It should only modify the values of Spacemacs settings."
 
    ;; File path pointing to emacs 27.1 executable compiled with support
    ;; for the portable dumper (this is currently the branch pdumper).
-   ;; (default "emacs")
-   dotspacemacs-emacs-pdumper-executable-file "emacs"
+   ;; (default "emacs-27.0.50")
+   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
 
    ;; Name of the Spacemacs dump file. This is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
@@ -293,6 +298,16 @@ It should only modify the values of Spacemacs settings."
                          monokai
 
                          )
+
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
+   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme. Value can be a symbol or list with\
+   ;; additional properties.
+   ;; (default '(spacemacs :separator wave :separator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
@@ -580,13 +595,29 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (add-to-list 'load-path "~/.spacemacs.d/extensions")
+
   (require 'solarized-theme)
   (require 'doom-themes)
   (require 'ranger)
   (require 'all-the-icons)
   (require 'eyebrowse)
+  (require 'flycheck)
+
+  (desktop-save-mode 1)
 
   (global-company-mode t)
+  (require 'company-posframe)
+  (company-posframe-mode 1)
+  (push '(company-posframe-mode . nil)
+      desktop-minor-mode-table)
+
+  ;; (run-with-idle-timer 10 t '(lambda () (desktop-save "~/.emacs.d")))
+
+  ;; (setq company-dabbrev-char-regexp "[\\.0-9a-z-_'/]") ;adjust regexp make `company-dabbrev' search words like `dabbrev-expand'
+  (setq company-dabbrev-code-other-buffers 'all) ;search completion from all buffers, not just same mode buffers.
+  (setq company-dabbrev-downcase nil) ;don't downcase completion result from dabbrev.
+
   (golden-ratio-mode t)
   (global-auto-revert-mode t)
   (add-hook 'prog-mode-hook '(lambda ()
@@ -594,8 +625,18 @@ before packages are loaded."
                                (which-function-mode 1)
                                (diminish 'evil-snipe-local-mode)
                                (diminish 'projectile-mode);; TODO excluding it doesn't work?
+                               (flycheck-mode 1)
+                               (paredit-mode 1)
                                ))
   (global-prettify-symbols-mode t)
+
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+  (require 'auto-save)
+  (auto-save-enable)
+  (setq auto-save-idle 0.5)
+  (setq auto-save-slient t)
+  ;; (setq auto-save-delete-trailing-whitespace t)
 
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
   (global-auto-revert-mode 1)
@@ -603,6 +644,7 @@ before packages are loaded."
    aya-persist-snippets-dir "~/.spacemacs.d/snippets"
    golden-ratio-auto-scale t
    initial-frame-alist (quote ((fullscreen . maximized)))
+   frame-resize-pixelwise t
    ;; auto-save-default nil
    org-src-fontify-natively t
    org-agenda-files '("~/org")
@@ -612,8 +654,8 @@ before packages are loaded."
                       ("\\.blade.php\\'" . web-mode)
                       )
                     auto-mode-alist)
-   auto-save-visited-file-name t
-   auto-save-interval 300
+   ;; auto-save-visited-file-name t
+   ;; auto-save-interval 300
    ranger-override-dired t
    scheme-program-name "csi -:c"
    mmm-global-mode 'maybe
@@ -631,12 +673,51 @@ before packages are loaded."
 
   (ranger-override-dired-mode t)
 
+  ;; if the open tag is the first in its line and the close tag is the last in its,
+  ;;   mark the whole lines containing the this tag pair
+  ;; else only mark the tag pair
+  (with-eval-after-load 'evil
+    (evil-define-text-object jjpandari/evil-a-tag-dwim (count &optional beg end type)
+      "Select a tag block's whole lines."
+      :extend-selection nil
+      (let* ((point-list (evil-select-xml-tag beg end type count t))
+             (tag-beg (car point-list))
+             (tag-end (cadr point-list))
+             (has-empty-line-after (progn (goto-char tag-end) (looking-at "\s*\n\n"))))
+        (goto-char tag-beg)
+        (if (looking-back "^\s*")
+            (progn (move-beginning-of-line)
+                   (let ((has-empty-line-before (looking-back "\n\n")))
+                     (evil-range
+                      (point)
+                      (progn (goto-char tag-end)
+                             (if (and has-empty-line-before has-empty-line-after)
+                                 (line-end-position 2)
+                               (line-end-position 1)))
+                      'line)))
+          point-list)))
+
+    (evil-define-text-object jjpandari/evil-a-attribute (count &optional beg end type)
+      "Select a tag block's whole lines."
+      :extend-selection nil
+      (list (- (web-mode-attribute-beginning-position) 1)
+            (+ (web-mode-attribute-end-position) 1)))
+    (evil-define-text-object jjpandari/evil-inner-attribute (count &optional beg end type)
+      "Select a tag block's whole lines."
+      :extend-selection nil
+      (list (web-mode-attribute-beginning-position)
+            (+ (web-mode-attribute-end-position) 1)))
+    )
+
   ;; http://emacs.stackexchange.com/a/20717/12854
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
   (global-set-key (kbd "C-s") 'evil-write-all)
   (define-key evil-inner-text-objects-map (kbd "m") 'evilmi-inner-text-object)
   (define-key evil-outer-text-objects-map (kbd "m") 'evilmi-outer-text-object)
+  (define-key evil-outer-text-objects-map (kbd "t") 'jjpandari/evil-a-tag-dwim)
+  (define-key evil-inner-text-objects-map (kbd "a") 'jjpandari/evil-inner-attribute)
+  (define-key evil-outer-text-objects-map (kbd "a") 'jjpandari/evil-a-attribute)
   (define-key evil-normal-state-map (kbd "+") 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "-") 'spacemacs/evil-numbers-transient-state/evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "C-a") 'evil-first-non-blank)
@@ -656,8 +737,7 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-b") 'delete-char)
   (define-key evil-insert-state-map (kbd "C-o") 'evil-open-below)
   (define-key evil-insert-state-map (kbd "C-S-o") 'evil-open-above)
-  ;; 34 is " not using yank cuz it's advised and slow
-  (define-key evil-insert-state-map (kbd "C-y") (lambda () (interactive) (evil-paste-from-register 34)))
+  (define-key evil-insert-state-map (kbd "C-y") 'yank)
   (define-key evil-insert-state-map (kbd "C-d") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
@@ -665,8 +745,7 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
   (define-key evil-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
-  ;; 34 is " not using yank cuz it's advised and slow
-  (define-key evil-insert-state-map (kbd "C-v") (lambda () (interactive) (evil-paste-from-register 34)))
+  (define-key evil-insert-state-map (kbd "C-v") #'yank)
   (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
   (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/expand-region)
@@ -685,6 +764,12 @@ before packages are loaded."
   (defun jjpandari/adjust-window () (golden-ratio-adjust 1))
   (advice-add #'spacemacs/alternate-window :after #'jjpandari/adjust-window)
   (define-key evil-normal-state-map (kbd "C-q") 'spacemacs/evil-search-clear-highlight)
+  (define-key evil-normal-state-map (kbd "K") 'paredit-kill)
+  (define-key evil-normal-state-map (kbd "L")
+    '(lambda () (interactive) (evil-insert-state) (paredit-kill)))
+  (define-key evil-normal-state-map (kbd "g K") 'fontux/paredit-kill-backward)
+  (define-key evil-normal-state-map (kbd "H")
+    '(lambda () (interactive) (evil-insert-state) (fontux/paredit-kill-backward)))
   (define-key prog-mode-map (kbd "H-c") 'aya-create)
   (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
   (define-key prog-mode-map (kbd "H-w") 'aya-persist-snippet)
@@ -702,6 +787,8 @@ before packages are loaded."
   (define-key evil-evilified-state-map (kbd "C-h C-k") 'describe-keymap)
   (spacemacs/set-leader-keys-for-major-mode 'erc-mode
     "q" 'erc-quit-server)
+  (evil-define-key 'insert paredit-mode-map (kbd "(") #'self-insert-command)
+  (evil-define-key 'insert paredit-mode-map (kbd "[") #'self-insert-command)
 
   (define-key evil-normal-state-map (kbd "SPC l") nil)
   (spacemacs/set-leader-keys
@@ -727,6 +814,7 @@ before packages are loaded."
   (define-key minibuffer-local-map (kbd "C-w") #'backward-kill-word)
   (define-key minibuffer-local-map (kbd "C-d") #'backward-char)
   (define-key minibuffer-local-map (kbd "C-b") #'delete-char)
+  (define-key minibuffer-local-map (kbd "C-v") #'yank)
   (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
 
   (evil-define-key 'insert js2-mode-map (kbd "C-l") #'emmet-expand-yas)
@@ -790,12 +878,12 @@ Threat is as function body when from endline before )"
   ;;   (define-key flyspell-mode-map (kbd "C-:") #'flyspell-auto-correct-word)
   ;;   )
 
-  (with-eval-after-load 'web-mode
-    (define-key web-mode-map (kbd "TAB") nil)
-    (define-key web-mode-map (kbd "<tab>") nil)
-    (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
-    (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
-    )
+  ;; (with-eval-after-load 'web-mode
+  ;;   (define-key web-mode-map (kbd "TAB") nil)
+  ;;   (define-key web-mode-map (kbd "<tab>") nil)
+  ;;   (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
+  ;;   (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
+  ;;   )
 
   (with-eval-after-load 'emmet-mode
     (define-key emmet-mode-keymap (kbd "TAB") nil)
@@ -961,6 +1049,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
      web-mode-script-padding 0
      web-mode-block-padding 0
      web-mode-enable-current-element-highlight t
+     web-mode-enable-auto-indentation nil
      web-mode-comment-formats '(("java" . "//") ("javascript" . "//") ("php" . "//")))
     (setq-default
      web-mode-markup-indent-offset 2
@@ -971,12 +1060,21 @@ If COUNT is given, move COUNT - 1 lines downward first."
     ;; "-" as word so company completes kabeb-case
     (modify-syntax-entry ?_ "w" web-mode-syntax-table)
     (modify-syntax-entry ?- "w" web-mode-syntax-table)
+    (modify-syntax-entry ?# "_" web-mode-syntax-table)
     (define-key web-mode-map (kbd "TAB") nil)
     (define-key web-mode-map (kbd "<tab>") nil)
+    (spacemacs/set-leader-keys-for-major-mode 'web-mode "t" 'web-mode-attribute-transpose)
+    (spacemacs/set-leader-keys-for-major-mode 'web-mode "k" 'web-mode-attribute-kill)
     (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
     (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
-    (setq company-backends-web-mode (cdr company-backends-web-mode)) ;; company-css & company-html super slow on osx
+
+    (require 'paredit-extension)
+    (evil-define-key 'normal web-mode-map (kbd "K") #'paredit-kill+)
+    (evil-define-key 'normal web-mode-map (kbd "L")
+      #'(lambda () (interactive) (evil-insert-state) (paredit-kill+)))
+
     (flycheck-add-mode 'javascript-eslint 'web-mode)
+
     ;; (add-to-list 'company-backends-web-mode 'company-lsp)
     ;; (require 'lsp-vue)
 
@@ -988,6 +1086,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
              web-mode-style-padding 0
              web-mode-script-padding 0
              web-mode-block-padding 0)
+       (setq company-backends (cdr company-backends)) ;; company-css & company-html super slow on osx
        ;; the next line causes an error, why did I add it?
        ;; (let ((current-prefix-arg 1)) (call-interactively 'flycheck-disable-checker nil (vector 'javascript-eslint)))
        ;; (lsp-vue-enable)
@@ -1052,6 +1151,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (evil-define-key 'evilified image-mode-map (kbd "n") #'image-next-file)
   )
 
+  (add-hook 'json-mode-hook (lambda () (display-line-numbers-mode 1)))
+
   (setq auto-revert-check-vc-info t)
 
   (add-to-list 'evil-evilified-state-modes 'ibuffer-mode)
@@ -1061,6 +1162,55 @@ If COUNT is given, move COUNT - 1 lines downward first."
   ;; (require 'lsp-mode)
   ;; (require 'company-lsp)
   ;; (add-to-list 'company-backends 'company-lsp)
+
+  (require 'exec-path-from-shell)
+  (add-to-list 'exec-path-from-shell-variables "GOPATH")
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+
+  (use-package youdao-dictionary
+    :bind ("C-c y" . youdao-dictionary-search-at-point+)
+    :config
+    ;; Enable Cache
+    (setq url-automatic-caching t)
+    ;; Integrate with popwin-el (https://github.com/m2ym/popwin-el)
+    ;; (push "*Youdao Dictionary*" popwin:special-display-config)
+    ;; Set file path for saving search history
+    (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao")
+    ;; Enable Chinese word segmentation support (支持中文分词)
+    ;; (setq youdao-dictionary-use-chinese-word-segmentation t)
+    )
+
+  (use-package coffee-mode
+    :config
+    (spacemacs/set-leader-keys-for-major-mode 'coffee-mode "d" 'coffee-mark-defun))
+
+  ;; (require 'ivy-posframe)
+  ;; (setq ivy-display-function #'ivy-posframe-display)
+  ;; (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
+  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-center)
+  ;; (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
+  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
+  ;; (setq ivy-display-function #'ivy-posframe-display-at-point)
+  ;; (setq ivy-posframe-parameters
+  ;;       '((left-fringe . 30)
+  ;;         (right-fringe . 30)))
+  ;; (ivy-posframe-enable)
+
+  (use-package flycheck-posframe
+    :ensure t
+    :after flycheck
+    :config
+    (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+    (flycheck-posframe-configure-pretty-defaults))
+
+  (use-package magit
+    :config
+    (add-hook 'magit-mode-hook 'spacemacs/toggle-golden-ratio-off)
+    (advice-add 'magit-mode-bury-buffer :after 'spacemacs/toggle-golden-ratio-on))
+
+  (advice-remove 'yank 'ad-Advice-yank)
+  (advice-remove 'yank-pop 'ad-Advice-yank-pop)
 
   (require 'keyfreq)
   (keyfreq-mode 1)

@@ -99,3 +99,41 @@
   "Add a (condensed) ternary expression, using the symbol before point as the first field."
   (interactive)
   (yas-expand-snippet "?$1:$0"))
+
+(defun fontux/paredit-kill-backward (&optional argument)
+  "Backward version of `paredit-kill'.
+
+With a `\\[universal-argument]' prefix argument, kill the text before point on
+the current line.
+With a positive integer prefix argument N, kill lines backward
+many times.
+
+With a `\\[universal-argument] \\[universal-argument]' prefix argument, kill all expressions
+before the point in the current block, group, string or comment."
+  (interactive "P")
+  (let ((hungry-p (equal argument '(16))))
+    (cond ((and (bolp) (not argument))
+           (delete-char -1))
+          ((and (integerp argument) (> argument 1))
+           (kill-line (- (1- argument))))
+          ((and argument (not hungry-p))
+           (kill-line 0))
+          (t (let* ((pos (point))
+                    (bol (point-at-bol))
+                    (cur-ppss (syntax-ppss))
+                    (cur-up-pos (cadr cur-ppss)))
+               (when (nth 5 cur-ppss) (cl-incf pos))
+               (cond ((or (nth 3 cur-ppss) (and (nth 4 cur-ppss) (nth 7 cur-ppss)))
+                      (let ((str/cmt-pos (1+ (nth 8 cur-ppss))))
+                        (when (nth 7 cur-ppss) (cl-incf str/cmt-pos))
+                        (kill-region (if hungry-p str/cmt-pos (max bol str/cmt-pos)) pos)))
+                     ((and cur-up-pos (or hungry-p (<= bol cur-up-pos)))
+                      (kill-region (1+ cur-up-pos) pos))
+                     (t (let* ((bol-ppss (save-excursion (syntax-ppss bol)))
+                               (bol-up-pos (cadr bol-ppss)))
+                          (cond ((or (and cur-up-pos (> bol-up-pos cur-up-pos))
+                                     (and (not cur-up-pos) bol-up-pos))
+                                 (kill-region (nth (car cur-ppss) (nth 9 bol-ppss)) pos))
+                                ((or (nth 3 bol-ppss) (nth 4 bol-ppss))
+                                 (kill-region (nth 8 bol-ppss) pos))
+                                (t (kill-region bol pos)))))))))))

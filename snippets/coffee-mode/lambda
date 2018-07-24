@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: lambda (command)
+# key: lm
+# type: command
+# see: coffee-newline-and-indent
+# --
+(yas-expand-snippet
+(format "($1) ->\ntab$0" )
+(if (coffee-line-wants-indent)
+""
+"($1) ->\ntab$0"))
+
+
+(+ (coffee-previous-indent) coffee-tab-width)

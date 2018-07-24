@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: for of (object)
+# key: forof
+# --
+for ${2:key}, ${3:val} of ${1:obj}
+${0:do}

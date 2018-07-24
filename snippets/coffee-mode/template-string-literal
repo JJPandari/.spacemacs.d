@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: template string literal
+# key: ts
+# --
+#{$0}

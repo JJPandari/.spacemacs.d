@@ -130,18 +130,22 @@ Each entry is either:
 (defun jjpandari/post-init-counsel ()
   (use-package counsel
     :config
-    (defun jjpandari/open-project-file ()
+    (defun jjpandari/open-project-file (&optional file-name)
       (interactive)
       (cond
-       ((locate-dominating-file default-directory ".git") (counsel-git))
+       ((locate-dominating-file default-directory ".git") (counsel-git file-name))
        ;; ((projectile-project-p) (projectile-find-file))
-       (t (counsel-find-file))))
+       (t (counsel-find-file file-name))))
+
+    (defmacro jjpandari/open-project-file-auto-symbol ()
+      `(lambda () (interactive) (jjpandari/open-project-file (thing-at-point 'symbol))))
 
     ;; https://sam217pa.github.io/2016/09/13/from-helm-to-ivy/
     (define-key evil-normal-state-map (kbd "<return>") 'ivy-switch-buffer)
     ;; (spacemacs/set-leader-keys "bb" 'ivy-switch-buffer)
     ;; (spacemacs/set-leader-keys "fr" 'counsel-recentf)
     (spacemacs/set-leader-keys "pf" 'jjpandari/open-project-file)
+    (spacemacs/set-leader-keys "pF" 'jjpandari/open-project-file-auto-symbol)
     (spacemacs/set-leader-keys "og" 'counsel-git-grep)
     ;; (spacemacs/set-leader-keys "ss" 'swiper)
     ;; (spacemacs/set-leader-keys "ry" 'counsel-yank-pop)
