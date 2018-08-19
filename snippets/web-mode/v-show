@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: v-show
+# key: vsh
+# --
+v-show="$0"

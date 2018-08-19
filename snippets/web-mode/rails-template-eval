@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rails template eval
+# key: rle
+# --
+<%= $0 %>

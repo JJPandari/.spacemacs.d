@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: inline if statement
+# key: oif
+# --
+if $1 then $2 else $0

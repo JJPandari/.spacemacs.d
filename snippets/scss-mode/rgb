@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rgb
+# key: rgb
+# --
+rgb(${1:r}, ${2:g}, ${3:b})

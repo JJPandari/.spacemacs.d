@@ -1,14 +1,7 @@
 # -*- mode: snippet -*-
-# name: lambda (command)
-# key: lm
-# type: command
+# name: lambda
+# key: lam
 # see: coffee-newline-and-indent
+# expand-env: ((yas-indent-line 'fixed))
 # --
-(yas-expand-snippet
-(format "($1) ->\ntab$0" )
-(if (coffee-line-wants-indent)
-""
-"($1) ->\ntab$0"))
-
-
-(+ (coffee-previous-indent) coffee-tab-width)
+($1) -> $0

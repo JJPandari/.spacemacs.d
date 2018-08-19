@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rails template exec
+# key: rl
+# --
+<% $0 %>

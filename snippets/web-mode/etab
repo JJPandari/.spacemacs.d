@@ -1,12 +1,12 @@
 # -*- mode: snippet -*-
 # contributor: nali
-# name: etab
+# name: el-table
 # key: etab
 # --
 <el-table :data="$1">
   <el-table-column prop="" label=""></el-table-column>
   <el-table-column label="操作" width="">
-    <template scope="scope">
+    <template slot-scope="scope">
     </template>
   </el-table-column>
 </el-table>

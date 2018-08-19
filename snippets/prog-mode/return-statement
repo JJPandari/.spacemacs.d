@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: return statement
+# key: ret
+# type: command
+# --
+(if (looking-at ".+$")
+    (progn
+      (insert "return ")
+      (move-end-of-line 1)
+      (when (and (not (derived-mode-p 'go-mode)) (not (looking-back ";")))
+        (insert ";"))
+      (evil-normal-state)
+      (yas-expand-snippet ""))
+  (yas-expand-snippet "return $0;"))

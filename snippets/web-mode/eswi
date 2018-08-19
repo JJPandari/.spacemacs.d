@@ -1,5 +1,5 @@
 # key: eswi
 # name: eswi
 # --
-<el-switch v-model${2:.number}="$1" ${3::}on-value="$4" ${5::}off-value="$6"
-on-text="$7" off-text="$8" on-color="#13ce66" off-color="#ff4949"></el-switch>
+<el-switch v-model${2:.number}="$1" ${3::}active-value="$4" ${5::}inactive-value="$6"
+active-text="$7" inactive-text="$8" active-color="#13ce66" inactive-color="#ff4949"></el-switch>

@@ -137,11 +137,12 @@ Each entry is either:
        ;; ((projectile-project-p) (projectile-find-file))
        (t (counsel-find-file file-name))))
 
-    (defmacro jjpandari/open-project-file-auto-symbol ()
-      `(lambda () (interactive) (jjpandari/open-project-file (thing-at-point 'symbol))))
+    (defun jjpandari/open-project-file-auto-symbol ()
+      (interactive)
+      (funcall 'jjpandari/open-project-file (thing-at-point 'symbol)))
 
     ;; https://sam217pa.github.io/2016/09/13/from-helm-to-ivy/
-    (define-key evil-normal-state-map (kbd "<return>") 'ivy-switch-buffer)
+    (evil-define-key 'normal prog-mode-map (kbd "RET") 'ivy-switch-buffer)
     ;; (spacemacs/set-leader-keys "bb" 'ivy-switch-buffer)
     ;; (spacemacs/set-leader-keys "fr" 'counsel-recentf)
     (spacemacs/set-leader-keys "pf" 'jjpandari/open-project-file)

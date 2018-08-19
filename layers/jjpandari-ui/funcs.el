@@ -150,7 +150,7 @@
                      ;; git info
                      '(:eval (when vc-mode
                                (concat
-                                (propertize " " 'face '(:family "all-the-icons" :height 0.9))
+                                (propertize " " 'face '(:family "all-the-icons" :height 1.0))
                                 (s-replace " Git" "" vc-mode))))
                      ;; '(:eval (replace-regexp-in-string " Git\(@\|:\|-\)" "" vc-mode))
 

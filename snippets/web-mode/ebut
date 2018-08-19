@@ -3,4 +3,4 @@
 # name: ebut
 # key: ebut
 # --
-<el-button ${1:type="primary"} @click="$2"${3: size="small"}>$4</el-button>
+<el-button ${1:type="${2:primary}"} @click="$3"${4: size="small"}>$0</el-button>

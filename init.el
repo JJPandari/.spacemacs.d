@@ -1,4 +1,3 @@
-;;; -*- lexical-binding: t; -*-
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
@@ -34,8 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
-     ;; ----------------------------------------------------------------
+   '(;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
@@ -69,6 +67,8 @@ This function should only modify configuration layer settings."
      lua
      yaml
      coffeescript
+     ruby
+     go
 
      jjpandari
      jjpandari-ui
@@ -96,6 +96,7 @@ This function should only modify configuration layer settings."
                                       smex
                                       keyfreq
                                       lispy
+                                      lispyville
                                       edit-server
                                       eyebrowse
                                       exec-path-from-shell
@@ -316,7 +317,7 @@ It should only modify the values of Spacemacs settings."
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font (if (eq system-type 'darwin)
                                  '("Source Code Pro"
-                                   :size 15
+                                   :size 18
                                    :weight normal
                                    :width normal
                                    :powerline-scale 1.1)
@@ -612,14 +613,19 @@ before packages are loaded."
   (push '(company-posframe-mode . nil)
       desktop-minor-mode-table)
 
-  ;; (run-with-idle-timer 10 t '(lambda () (desktop-save "~/.emacs.d")))
+  (run-with-idle-timer 30 t (lambda () (desktop-save "~/.emacs.d")))
 
-  ;; (setq company-dabbrev-char-regexp "[\\.0-9a-z-_'/]") ;adjust regexp make `company-dabbrev' search words like `dabbrev-expand'
-  (setq company-dabbrev-code-other-buffers 'all) ;search completion from all buffers, not just same mode buffers.
-  (setq company-dabbrev-downcase nil) ;don't downcase completion result from dabbrev.
+  ;; adjust regexp make `company-dabbrev' search words like `dabbrev-expand'
+  ;; (setq company-dabbrev-char-regexp "[\\.0-9a-z-_'/]")
+  ;; search completion from all buffers, not just same mode buffers.
+  (setq company-dabbrev-code-other-buffers 'all)
+  ;; don't downcase completion result from dabbrev.
+  (setq company-dabbrev-downcase nil)
 
   (golden-ratio-mode t)
-  (global-auto-revert-mode t)
+  (setq fci-rule-use-dashes t)
+  (setq fci-dash-pattern 0.6)
+  (fci-mode 1)
   (add-hook 'prog-mode-hook '(lambda ()
                                (electric-pair-mode 1)
                                (which-function-mode 1)
@@ -631,11 +637,10 @@ before packages are loaded."
   (global-prettify-symbols-mode t)
 
   (setq make-backup-files nil)
-  (setq auto-save-default nil)
   (require 'auto-save)
   (auto-save-enable)
-  (setq auto-save-idle 0.5)
-  (setq auto-save-slient t)
+  (setq auto-save-idle 1)
+  (setq auto-save-silent t)
   ;; (setq auto-save-delete-trailing-whitespace t)
 
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
@@ -645,7 +650,7 @@ before packages are loaded."
    golden-ratio-auto-scale t
    initial-frame-alist (quote ((fullscreen . maximized)))
    frame-resize-pixelwise t
-   ;; auto-save-default nil
+   auto-save-default nil
    org-src-fontify-natively t
    org-agenda-files '("~/org")
    auto-mode-alist (append
@@ -661,6 +666,7 @@ before packages are loaded."
    mmm-global-mode 'maybe
    js2-include-node-externs t
    js-indent-level 2
+   css-indent-offset 2
    )
   (delete-selection-mode t)
   (setq-default
@@ -673,46 +679,61 @@ before packages are loaded."
 
   (ranger-override-dired-mode t)
 
-  ;; if the open tag is the first in its line and the close tag is the last in its,
-  ;;   mark the whole lines containing the this tag pair
-  ;; else only mark the tag pair
   (with-eval-after-load 'evil
+    ;; if the open tag is the first in its line and the close tag is the last in its,
+    ;;   mark the whole lines containing the this tag pair
+    ;; else only mark the tag pair
     (evil-define-text-object jjpandari/evil-a-tag-dwim (count &optional beg end type)
       "Select a tag block's whole lines."
       :extend-selection nil
       (let* ((point-list (evil-select-xml-tag beg end type count t))
              (tag-beg (car point-list))
              (tag-end (cadr point-list))
-             (has-empty-line-after (progn (goto-char tag-end) (looking-at "\s*\n\n"))))
-        (goto-char tag-beg)
-        (if (looking-back "^\s*")
-            (progn (move-beginning-of-line)
-                   (let ((has-empty-line-before (looking-back "\n\n")))
-                     (evil-range
-                      (point)
-                      (progn (goto-char tag-end)
-                             (if (and has-empty-line-before has-empty-line-after)
-                                 (line-end-position 2)
-                               (line-end-position 1)))
-                      'line)))
+             (line-beg (progn (goto-char tag-beg) (line-beginning-position))))
+        (if (and (looking-back "^\s*")
+                 (progn (goto-char tag-end) (looking-at "\s*$"))
+                 (not (equal (progn (print (car command-history)) (car command-history)) '(evil-surround-delete 116))))
+            (evil-range line-beg (line-end-position) 'line)
           point-list)))
 
     (evil-define-text-object jjpandari/evil-a-attribute (count &optional beg end type)
-      "Select a tag block's whole lines."
+      "Select an attribute, including the leading space."
       :extend-selection nil
       (list (- (web-mode-attribute-beginning-position) 1)
             (+ (web-mode-attribute-end-position) 1)))
     (evil-define-text-object jjpandari/evil-inner-attribute (count &optional beg end type)
-      "Select a tag block's whole lines."
+      "Select an attribute."
       :extend-selection nil
       (list (web-mode-attribute-beginning-position)
             (+ (web-mode-attribute-end-position) 1)))
     )
 
+  (defun jjpandari/goto-kill-end (kill-fun forward?)
+    "When supplied with a kill function `kill-fun', go to the point the kill function kills to."
+    (let* ((old-max (point-max))
+           (new-max (progn (funcall kill-fun) (point-max)))
+           (kill-end (progn
+                       (undo-tree-undo)
+                       (funcall (if forward? '+ '-) (point) (abs (- new-max old-max))))))
+      (goto-char kill-end)))
+
+  (require 'paredit-extension)
+
+  (defun jjpandari/goto-end-of-sexp ()
+    "Go to the end of current expression."
+    (interactive)
+    (jjpandari/goto-kill-end 'paredit-kill+ t))
+
+  (defun jjpandari/goto-beginning-of-sexp ()
+    "Go to the end of current expression."
+    (interactive)
+    (jjpandari/goto-kill-end 'fontux/paredit-kill-backward nil))
+
   ;; http://emacs.stackexchange.com/a/20717/12854
   (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol))
-  (global-set-key (kbd "C-s") 'evil-write-all)
+  (global-set-key (kbd "C-s") 'swiper)
+  (global-set-key (kbd "C-S-s") 'spacemacs/swiper-region-or-symbol)
   (define-key evil-inner-text-objects-map (kbd "m") 'evilmi-inner-text-object)
   (define-key evil-outer-text-objects-map (kbd "m") 'evilmi-outer-text-object)
   (define-key evil-outer-text-objects-map (kbd "t") 'jjpandari/evil-a-tag-dwim)
@@ -748,6 +769,10 @@ before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-v") #'yank)
   (define-key evil-insert-state-map (kbd "M-d") #'backward-word)
   (define-key evil-insert-state-map (kbd "M-b") #'kill-word)
+  (define-key evil-insert-state-map (kbd "M-e") #'evil-scroll-down)
+  (define-key evil-emacs-state-map (kbd "M-e") #'evil-scroll-down)
+  (define-key evil-insert-state-map (kbd "M-a") #'evil-scroll-up)
+  (define-key evil-emacs-state-map (kbd "M-a") #'evil-scroll-up)
   (define-key evil-insert-state-map (kbd "<C-backspace>") #'er/expand-region)
   (define-key evil-insert-state-map (kbd "H-v") #'yank-pop)
   (spacemacs/set-leader-keys
@@ -755,21 +780,22 @@ before packages are loaded."
     ")" #'up-list
     "," #'evil-indent
     "b r" #'rename-buffer
-    "g c" #'magit-commit
-    "g C" #'magit-clone
-    "g p" #'magit-push
+    "b k" #'spacemacs/kill-this-buffer
+    "n v" #'narrow-to-region
+    ;; "g c" #'magit-commit
+    ;; "g C" #'magit-clone
+    ;; "g p" #'magit-push
     "g d" #'magit-diff-buffer-file
     "g D" #'magit-diff)
-  (define-key evil-normal-state-map (kbd "TAB") #'spacemacs/alternate-window)
-  (defun jjpandari/adjust-window () (golden-ratio-adjust 1))
+  (define-key evil-normal-state-map (kbd "SPC TAB") #'spacemacs/alternate-window)
+  (define-key evil-normal-state-map (kbd "SPC RET") #'spacemacs/alternate-buffer)
+  (defun jjpandari/adjust-window () (golden-ratio))
   (advice-add #'spacemacs/alternate-window :after #'jjpandari/adjust-window)
   (define-key evil-normal-state-map (kbd "C-q") 'spacemacs/evil-search-clear-highlight)
-  (define-key evil-normal-state-map (kbd "K") 'paredit-kill)
-  (define-key evil-normal-state-map (kbd "L")
-    '(lambda () (interactive) (evil-insert-state) (paredit-kill)))
-  (define-key evil-normal-state-map (kbd "g K") 'fontux/paredit-kill-backward)
-  (define-key evil-normal-state-map (kbd "H")
-    '(lambda () (interactive) (evil-insert-state) (fontux/paredit-kill-backward)))
+  (define-key evil-normal-state-map (kbd "L") 'jjpandari/goto-end-of-sexp)
+  (define-key evil-operator-state-map (kbd "L") 'jjpandari/goto-end-of-sexp)
+  (define-key evil-normal-state-map (kbd "H") 'jjpandari/goto-beginning-of-sexp)
+  (define-key evil-operator-state-map (kbd "H") 'jjpandari/goto-beginning-of-sexp)
   (define-key prog-mode-map (kbd "H-c") 'aya-create)
   (define-key prog-mode-map (kbd "H-e") 'spacemacs/auto-yasnippet-expand)
   (define-key prog-mode-map (kbd "H-w") 'aya-persist-snippet)
@@ -779,16 +805,20 @@ before packages are loaded."
   (define-key evil-normal-state-map (kbd "M") 'evilmi-jump-items)
   (define-key evil-visual-state-map (kbd "M") 'evilmi-jump-items)
   (define-key evil-operator-state-map (kbd "M") 'evilmi-jump-items)
+  (define-key evil-normal-state-map (kbd "C-l") 'avy-goto-word-1)
+  (define-key evil-visual-state-map (kbd "C-l") 'avy-goto-word-1)
+  (define-key evil-operator-state-map (kbd "C-l") 'avy-goto-word-1)
   (spacemacs/set-leader-keys-for-major-mode 'snippet-mode
     "," 'yas-load-snippet-buffer-and-close
     "l" 'yas-load-snippet-buffer)
   (define-key evil-normal-state-map (kbd "C-h C-k") 'describe-keymap)
   (define-key evil-visual-state-map (kbd "C-h C-k") 'describe-keymap)
   (define-key evil-evilified-state-map (kbd "C-h C-k") 'describe-keymap)
+  (define-key evil-normal-state-map (kbd "C-h C-f") 'describe-face)
+  (define-key evil-visual-state-map (kbd "C-h C-f") 'describe-face)
+  (define-key evil-evilified-state-map (kbd "C-h C-f") 'describe-face)
   (spacemacs/set-leader-keys-for-major-mode 'erc-mode
     "q" 'erc-quit-server)
-  (evil-define-key 'insert paredit-mode-map (kbd "(") #'self-insert-command)
-  (evil-define-key 'insert paredit-mode-map (kbd "[") #'self-insert-command)
 
   (define-key evil-normal-state-map (kbd "SPC l") nil)
   (spacemacs/set-leader-keys
@@ -797,6 +827,7 @@ before packages are loaded."
     "l n" #'eyebrowse-next-window-config
     "l TAB" #'eyebrowse-last-window-config
     "l d" #'eyebrowse-close-window-config
+    "l k" #'eyebrowse-close-window-config
     "l r" #'eyebrowse-rename-window-config
     "l 0" #'eyebrowse-switch-to-window-config-0
     "l 1" #'eyebrowse-switch-to-window-config-1
@@ -872,6 +903,8 @@ Threat is as function body when from endline before )"
     (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
     (define-key company-active-map (kbd "C-l") nil)
     (define-key company-active-map (kbd "C-w") nil)
+    (define-key company-active-map (kbd "RET") nil)
+    (define-key company-active-map (kbd "<return>") nil)
     )
 
   ;; (with-eval-after-load 'flyspell
@@ -980,9 +1013,47 @@ Threat is as function body when from endline before )"
     (setq yas-snippet-dirs '("~/.spacemacs.d/snippets"))
     )
 
+  (defun jjpandari/use-small-font ()
+    "Use 15px font."
+    (interactive)
+    (set-face-attribute 'default nil
+                        :family "Source Code Pro"
+                        :height 150
+                        :weight 'normal
+                        :width 'normal)
+    (set-frame-parameter nil 'fullscreen 'maximized))
+
+  (defun jjpandari/use-large-font ()
+    "Use 18px font."
+    (interactive)
+    (set-face-attribute 'default nil
+                        :family "Source Code Pro"
+                        :height 180
+                        :weight 'normal
+                        :width 'normal)
+    (set-frame-parameter nil 'fullscreen 'maximized))
+
+  (defun jjpandari/use-xs-font ()
+    "Use 8px font."
+    (interactive)
+    (set-face-attribute 'default nil
+                        :family "Source Code Pro"
+                        :height 80
+                        :weight 'normal
+                        :width 'normal)
+    (set-frame-parameter nil 'fullscreen 'maximized))
+
+  (jjpandari/use-large-font)
+
+  ;; (set-frame-font (font-spec
+  ;;                  :family "Source Code Pro"
+  ;;                  :height 180
+  ;;                  :weight 'normal
+  ;;                  :width 'normal) nil t)
+
   (dolist (charset '(kana han cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "Source Han Sans CN Regular" :size 15)))
+                      (font-spec :family "Source Han Sans CN Regular")))
   (set-fontset-font t nil (font-spec :family "Dejavu Sans Mono") nil 'append)
 
   ;; http://emacs.stackexchange.com/a/7745/12854
@@ -1061,17 +1132,13 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (modify-syntax-entry ?_ "w" web-mode-syntax-table)
     (modify-syntax-entry ?- "w" web-mode-syntax-table)
     (modify-syntax-entry ?# "_" web-mode-syntax-table)
+    (modify-syntax-entry ?| "." web-mode-syntax-table)
     (define-key web-mode-map (kbd "TAB") nil)
     (define-key web-mode-map (kbd "<tab>") nil)
     (spacemacs/set-leader-keys-for-major-mode 'web-mode "t" 'web-mode-attribute-transpose)
     (spacemacs/set-leader-keys-for-major-mode 'web-mode "k" 'web-mode-attribute-kill)
     (evil-define-key 'insert web-mode-map (kbd "TAB") #'tab-indent-or-complete)
     (evil-define-key 'insert web-mode-map (kbd "<tab>") #'tab-indent-or-complete)
-
-    (require 'paredit-extension)
-    (evil-define-key 'normal web-mode-map (kbd "K") #'paredit-kill+)
-    (evil-define-key 'normal web-mode-map (kbd "L")
-      #'(lambda () (interactive) (evil-insert-state) (paredit-kill+)))
 
     (flycheck-add-mode 'javascript-eslint 'web-mode)
 
@@ -1095,6 +1162,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
          (setq
           imenu-generic-expression ; imenu regexps for vue.js
           '(("method" "^    \\([^ ]+\\)(.*) {" 1)
+            ("data" "^    \\([^ ]+\\): {" 1)
             ("prop" "^  \\([^ ]+\\): {" 1)
             ("hook" "^  \\([^ ]+\\)() {" 1))))) t)
 
@@ -1145,6 +1213,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (spacemacs/set-leader-keys "os" 'yas-new-snippet)
 
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
+  (define-key ranger-mode-map (kbd "s") 'ranger-sort-criteria)
 
   (with-eval-after-load 'image-mode
     (evil-define-key 'evilified image-mode-map (kbd "p") #'image-previous-file)
@@ -1204,13 +1273,33 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
     (flycheck-posframe-configure-pretty-defaults))
 
-  (use-package magit
-    :config
-    (add-hook 'magit-mode-hook 'spacemacs/toggle-golden-ratio-off)
-    (advice-add 'magit-mode-bury-buffer :after 'spacemacs/toggle-golden-ratio-on))
+  ;; (use-package magit
+  ;;   :config
+  ;;   (add-hook 'magit-mode-hook 'spacemacs/toggle-golden-ratio-off)
+  ;;   (advice-add 'magit-mode-bury-buffer :after 'spacemacs/toggle-golden-ratio-on))
+  ;; (advice-remove 'magit-mode-bury-buffer 'spacemacs/toggle-golden-ratio-on)
 
   (advice-remove 'yank 'ad-Advice-yank)
   (advice-remove 'yank-pop 'ad-Advice-yank-pop)
+
+  (defun jester/paredit-space-for-delimiter-p (endp delm)
+    (not (member major-mode '(c-mode
+                              cc-mode
+                              c++-mode
+                              java-mode
+                              javascript-mode
+                              js-mode
+                              js2-mode
+                              web-mode
+                              lua-mode
+                              php-mode
+                              python-mode
+                              ruby
+                              ))))
+
+  (use-package paredit
+    :config
+    (add-to-list 'paredit-space-for-delimiter-predicates 'jester/paredit-space-for-delimiter-p))
 
   (require 'keyfreq)
   (keyfreq-mode 1)
