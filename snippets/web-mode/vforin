@@ -3,4 +3,4 @@
 # name: vforin
 # key: vforin
 # --
-v-for="($1, $2) in $3" :key="$2"
+v-for="(${1:val}, ${2:key}) in $3" :key="$2"

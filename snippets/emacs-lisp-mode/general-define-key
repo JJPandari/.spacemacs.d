@@ -1,0 +1,7 @@
+# key: gd
+# name: general-define-key statement
+# --
+(general-define-key
+${1::states '(${2:insert emacs})
+}${3::keymaps '$4-mode-map
+}"$5" '$0)

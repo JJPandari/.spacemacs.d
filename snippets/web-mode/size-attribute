@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: size attribute
+# key: si
+# --
+size="$0"

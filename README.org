@@ -1,1 +1,4 @@
-* .spacemacs.d
+*  moving on...
+I have moved on from spacemacs. It has been really helpful over the years, but seems a bit too heavy for me now, so I went on constructing my own config.
+
+Feel free to look around if find anything useful here. They may not suit later spacemacs versions though.

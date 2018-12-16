@@ -104,6 +104,9 @@ This function should only modify configuration layer settings."
                                       ivy-posframe
                                       flycheck-posframe
                                       company-posframe
+                                      general
+                                      super-save
+                                      symbol-overlay
 
                                       lsp-mode
                                       company-lsp
@@ -116,9 +119,6 @@ This function should only modify configuration layer settings."
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
-                                    smartparens
-                                    ;; iedit
-                                    ;; evil-iedit-state
                                     auto-highlight-symbol
                                     evil-mc
                                     evil-args
@@ -638,10 +638,18 @@ before packages are loaded."
 
   (setq make-backup-files nil)
   (require 'auto-save)
-  (auto-save-enable)
+  ;; (auto-save-enable)
   (setq auto-save-idle 1)
   (setq auto-save-silent t)
   ;; (setq auto-save-delete-trailing-whitespace t)
+
+  (use-package super-save
+  :demand
+  :config
+  (super-save-mode 1)
+  (setq super-save-auto-save-when-idle t
+        super-save-idle-duration 30
+        super-save-hook-triggers '(focus-out-hook)))
 
   (add-hook 'inferior-scheme-mode '(lambda () (electric-pair-mode 1)))
   (global-auto-revert-mode 1)
@@ -1208,9 +1216,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
   (spacemacs/set-leader-keys "oy" 'make-cd-for-terminal)
   (spacemacs/set-leader-keys "oi" 'ibuffer)
-  (spacemacs/set-leader-keys "oa" 'counsel-ag)
+  (spacemacs/set-leader-keys "/" 'counsel-ag)
   (spacemacs/set-leader-keys "ov" 'yas-visit-snippet-file)
   (spacemacs/set-leader-keys "os" 'yas-new-snippet)
+  (spacemacs/set-leader-keys "fd" 'deer)
 
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
   (define-key ranger-mode-map (kbd "s") 'ranger-sort-criteria)
@@ -1283,23 +1292,69 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (advice-remove 'yank-pop 'ad-Advice-yank-pop)
 
   (defun jester/paredit-space-for-delimiter-p (endp delm)
-    (not (member major-mode '(c-mode
-                              cc-mode
-                              c++-mode
-                              java-mode
-                              javascript-mode
-                              js-mode
-                              js2-mode
-                              web-mode
-                              lua-mode
-                              php-mode
-                              python-mode
-                              ruby
-                              ))))
+    (or (member 'font-lock-keyword-face (text-properties-at (1- (point))))
+        (not (derived-mode-p 'basic-mode
+                             'c++-mode
+                             'c-mode
+                             'coffee-mode
+                             'csharp-mode
+                             'd-mode
+                             'dart-mode
+                             'go-mode
+                             'java-mode
+                             'js-mode
+                             'lua-mode
+                             'objc-mode
+                             'pascal-mode
+                             'python-mode
+                             'r-mode
+                             'ruby-mode
+                             'rust-mode
+                             'typescript-mode
+                             'web-mode
+                             'css-mode))))
 
   (use-package paredit
     :config
     (add-to-list 'paredit-space-for-delimiter-predicates 'jester/paredit-space-for-delimiter-p))
+
+  (use-package symbol-overlay
+    :ensure t
+    :hook ((prog-mode . symbol-overlay-mode)
+           (html-mode . symbol-overlay-mode)
+           (css-mode . symbol-overlay-mode)
+           (yaml-mode . symbol-overlay-mode)
+           (conf-mode . symbol-overlay-mode))
+    :config
+    (general-define-key
+     :states '(normal motion)
+     "TAB" 'symbol-overlay-put
+     ;; TODO make tab jump evil-multiedit symbol or current
+     "M-n" 'symbol-overlay-jump-next
+     "M-p" 'symbol-overlay-jump-prev)
+    ;; don't put temporary highlight
+    ;; TODO timer symbol not found
+    ;; (cancel-timer symbol-overlay-timer)
+    )
+
+  (defvar jester-auto-save-idle 1 "Time in seconds before auto-saving all buffers.")
+  (run-with-idle-timer jester-auto-save-idle t #'jester/save-all-buffers)
+  ;; (cancel-function-timers 'jester/save-all-buffers) ;; for debugging
+  (add-hook 'focus-out-hook #'jester/save-all-buffers)
+
+  ;;----------------------------------------------------------------------------
+  ;; Save all buffers.
+  ;;----------------------------------------------------------------------------
+  (defun jester/save-all-buffers ()
+    "Save all buffers."
+    (evil-write-all nil))
+
+  (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
+
+  (use-package magithub
+    :after magit
+    :config
+    (magithub-feature-autoinject t))
 
   (require 'keyfreq)
   (keyfreq-mode 1)
